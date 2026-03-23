@@ -7,7 +7,7 @@
 | **Date** | 2026-03-20 |
 | **Version** | 0.1 (draft) |
 | **Status** | Draft |
-| **Author(s)** | Rune Kjørlaug, OpenPeppol |
+| **Author(s)** | Rune Kjørlaug - OpenPeppol |
 
 ---
 
@@ -98,15 +98,17 @@ All Peppol-based scenarios (1, 2, 3 and 5) operate within the standard 4-corner 
 - **C3** — Receiving Service Provider (Access Point): receives the invoice on behalf of C4
 - **C4** — Receiving end user (Buyer): receives and processes the invoice
 
-Invoice exchange follows the Peppol BIS 3.0 format over AS4. The SMP/SML infrastructure handles routing and capability discovery. SC5 does not change the transport layer — it adds verifiable trust signals at key decision points in the flow.
+Invoice exchange follows the Peppol BIS 3.0 format over AS4. C2 resolves the delivery endpoint for a given invoice by querying the SML to find C4's SMP, which returns C3 as the AP authorised to receive on C4's behalf. SC5 does not change the transport layer — it adds verifiable trust signals at key decision points in the flow.
+
+> **Note on receipts (MLR/MLS):** The current Peppol specification does not mandate an application-level receipt from C4 back to C1 confirming that an invoice has been processed or accepted. The AS4 transport acknowledgement between C3 and C2 is the only standardised confirmation. Work is ongoing within the Peppol community on **Message Level Response (MLR)** and **Message Level Status (MLS)** to introduce a standardised business-level receipt mechanism. SC5 should monitor this work, as a future MLR/MLS could carry attestation-related metadata — for instance, confirming that C4 accepted the invoice against a valid Approved Supplier attestation — and would close a significant gap in the end-to-end trust chain.
 
 ```mermaid
 graph LR
     C1["C1\nSupplier"] -->|"Submits invoice"| C2["C2\nSupplier's AP"]
     C2 -->|"Peppol AS4\n(BIS 3.0)"| C3["C3\nBuyer's AP"]
     C3 -->|"Delivers invoice"| C4["C4\nBuyer"]
-    SML["SML"] -.->|"Routing lookup"| C2
-    SMP["SMP"] -.->|"Capability discovery"| C2
+    SML["SML"] -.->|"Routing lookup\n(find C4's SMP)"| C2
+    SMP["SMP (C4's entry)"] -.->|"C3 is C4's AP"| C2
 ```
 
 ### 2.2 Trust enhancement through attestations
@@ -124,7 +126,7 @@ Both attestation types are Electronic Attestations of Attributes (EAA) in the se
 
 The following pre-conditions apply across all Peppol-based SC5 scenarios:
 
-1. All parties are registered Peppol participants (C1, C2, C3, C4 entries in SMP/SML).
+1. C1 (Supplier) and C4 (Buyer) are registered Peppol participants with entries in the SMP. C4's SMP entry records C3 as the Access Point authorised to receive documents on C4's behalf; C1's SMP entry records C2 similarly. C2 and C3 do not have their own SMP entries — they are service providers acting on behalf of their clients.
 2. C2 and C3 are certified Peppol Access Points.
 3. European Business Wallets are available and operational for C1, C4, and the SPs as applicable; wallet providers have passed ITB testing.
 4. EBWOID attestations are issued to the relevant business wallets by WP4-designated EBWOID providers.
@@ -201,9 +203,8 @@ sequenceDiagram
         alt Attestation valid
             C2 ->> C3: Forward invoice (Peppol AS4)
             C3 ->> C4: Deliver invoice
-            C4 -->> C3: Acknowledge receipt
-            C3 -->> C2: Acknowledge delivery
-            C2 -->> C1: Confirm invoice submitted
+            C2 -->> C1: Confirm invoice submitted (AS4 acknowledgement from C3)
+            Note over C3, C4: No mandatory receipt from C4 in current Peppol.<br/>MLR/MLS work underway — see §2.1.
         else Attestation invalid or absent
             C2 -->> C1: Reject invoice (with reason)
         end
@@ -219,10 +220,10 @@ sequenceDiagram
 | A.3 | EBW C1 | C1's EBW stores the attestation. C1 is notified. | — | C1 may have multiple Approved Supplier attestations from different buyers |
 | B.1 | C1 | C1 creates the invoice in Peppol BIS 3.0 format and initiates submission to C2. As part of the submission handshake, C1 presents the Approved Supplier attestation for the relevant buyer (C4) via OpenID4VP. | Approved Supplier attestation in EBW C1; C2 supports OpenID4VP verification | C1 may present the attestation out-of-band (API call separate from invoice submission); scope to be defined |
 | B.2 | C2 | C2 acts as Verifier/Relying Party. It verifies: (a) the attestation signature (issuer = C4), (b) the subject matches C1, (c) the attestation is within its validity period, (d) the attestation has not been revoked. | Trust registry accessible to C2; revocation endpoint operational | C2 may cache verification results for a configurable period to avoid repeated checks |
-| B.3a | C2 → C3 | If verification succeeds, C2 forwards the invoice to C3 via Peppol AS4. Normal Peppol routing applies (SMP/SML lookup). | C3 registered in SMP for C4's Peppol ID | C2 may attach attestation metadata to the AS4 message (optional, to be specified) |
+| B.3a | C2 → C3 | If verification succeeds, C2 forwards the invoice to C3 via Peppol AS4. C2 resolves the recipient by looking up C4's Peppol ID in the SML/SMP, which returns C3 as the AP authorised to receive on C4's behalf. | C4 registered in SMP with C3 as receiving AP | C2 may attach attestation metadata to the AS4 message (optional, to be specified) |
 | B.3b | C2 → C1 | If verification fails (invalid, absent, expired, revoked), C2 rejects the invoice and returns an error to C1 with a standardized reason code. | — | Reason codes: ATTESTATION_MISSING, ATTESTATION_INVALID, ATTESTATION_EXPIRED, ATTESTATION_REVOKED |
 | B.4 | C3 → C4 | C3 delivers the invoice to C4 using the agreed delivery mechanism. | — | — |
-| B.5 | C4 | C4 acknowledges receipt. | — | — |
+| B.5 | C3 → C2 → C1 | C3 returns an AS4-level acknowledgement to C2; C2 confirms submission to C1. There is no mandatory application-level receipt from C4 back to C1 in the current Peppol specification. Work on Message Level Response (MLR) and Message Level Status (MLS) is ongoing within the Peppol community and may introduce a standardised receipt mechanism; SC5 should monitor this and consider it for Scenario 5. | — | If MLR/MLS becomes available, C4's receipt could carry attestation-related metadata confirming the invoice was accepted against a valid Approved Supplier attestation |
 
 ### 3.5 Additional flows
 
@@ -306,8 +307,8 @@ sequenceDiagram
         C3 ->> C3: Verify attestation (issuer = C1, subject = C2, scope = invoice sending)
         alt Attestation valid
             C3 ->> C4: Deliver invoice
-            C4 -->> C3: Acknowledge
-            C3 -->> C2: Acknowledge delivery
+            C3 -->> C2: AS4 acknowledgement
+            Note over C3, C4: No mandatory receipt from C4 — see §2.1 on MLR/MLS.
         else Attestation invalid or absent
             C3 -->> C2: Reject (with reason)
             C2 -->> C1: Reject invoice
@@ -367,8 +368,8 @@ In addition to Scenario 2 pre-conditions:
 1. C2 holds an Authorized SP attestation from C1 (as in Scenario 2).
 2. C3 holds an Authorized SP attestation from C4 (as in Scenario 2, A').
 3. Tax Authorities in the piloting Member States are reachable via a defined API endpoint and are capable of verifying EBW attestations.
-4. A Tax Data Document (TDD) format is defined for the pilot.
-5. ViDA-related implementing rules are sufficiently stable to allow pilot design.
+4. The Tax Data Document (TDD) format used in the pilot is aligned with the Peppol ViDA pilot outputs. SC5 will adopt the format and process definitions from that pilot rather than specifying them independently.
+5. The Peppol ViDA pilot is sufficiently advanced to provide a reference TDD format and reporting process for SC5 to build on.
 
 ### 5.3 Main flow
 
@@ -427,7 +428,7 @@ sequenceDiagram
 
 ### 5.5 Challenges and barriers
 
-- **ViDA regulatory maturity**: the ViDA Regulation and its Implementing Acts are not yet fully stable. The pilot must track regulatory developments closely and may need to adjust the TDD format and reporting trigger conditions.
+- **Alignment with the Peppol ViDA pilot**: Peppol is actively engaged in a dedicated ViDA pilot in which invoice formats, Tax Data Document structures, and reporting processes are being defined and tested. SC5 Scenario 3 must align with and reference the outputs of that pilot rather than developing parallel specifications. The Peppol ViDA pilot is the primary reference point for the TDD format, reporting triggers, and the interface between the Peppol network and tax authority endpoints used in this scenario.
 - **Tax Authority readiness**: Tax Authorities in piloting Member States must build or adapt API endpoints capable of receiving and verifying EBW attestations. This is a significant dependency outside the consortium.
 - **Scope attribute in attestation**: the Authorized SP attestation from Scenario 2 must include a scope attribute that explicitly covers tax reporting. This must be reflected in the schema.
 - **Cross-border ViDA rules**: when C1 and C4 are in different Member States, the reporting rules may differ. The scenario must be designed to handle both same-country and cross-border invoice flows.
@@ -437,7 +438,7 @@ sequenceDiagram
 | # | Assumption | Rationale |
 |---|-----------|-----------|
 | WA3.1 | The Authorized SP attestation used in Scenario 2 is the same attestation used in Scenario 3, with an added scope attribute for tax reporting. | Avoids creating a separate attestation type; scope attributes control which use cases the attestation covers. |
-| WA3.2 | Pilot tax reporting in Scenario 3 uses a simplified TDD format, not the full ViDA-compliant format. | Full ViDA compliance may not be achievable within pilot timelines given regulatory uncertainty. |
+| WA3.2 | The TDD format and reporting process used in Scenario 3 follow the Peppol ViDA pilot definitions. SC5 does not independently specify these — it consumes them as an input. | Avoids duplication and ensures SC5 remains aligned with the broader Peppol ViDA effort; any deviation would risk incompatibility with the emerging European standard for ViDA reporting. |
 | WA3.3 | Reporting is triggered per invoice (not batched) in the pilot for simplicity. | Batch reporting is an optimization for production; per-invoice reporting is simpler to trace and verify in a pilot context. |
 
 ---
@@ -446,20 +447,16 @@ sequenceDiagram
 
 ### 6.1 Introduction
 
-Scenario 5 explores additional or alternative trust-building mechanisms that can be introduced into the standard Peppol flow, beyond the attestation-based approach of Scenarios 1–3. These include the use of **Qualified Electronic Seals (QESeal)** and **Qualified Electronic Registered Delivery Services (QERDS)**, as well as other EBW-based capabilities such as data portability.
+Scenario 5 explores additional or alternative trust-building mechanisms that can be introduced into the standard Peppol flow, beyond the attestation-based approach of Scenarios 1–3. It is research-oriented (MVP+) and evaluates whether these mechanisms provide proportionate value relative to their complexity and cost.
 
-This scenario is research-oriented (MVP+) and serves to evaluate whether these additional mechanisms provide proportionate value relative to their complexity and cost.
-
-A natural structural alignment exists between the Peppol 4-corner model and the QERDS delivery architecture defined in the WE BUILD Blueprint (section 4.4). The Blueprint describes a four-corner QERDS flow — sender QTSP (A), recipient QTSP (B), with common services for discovery — that maps directly onto C2 (Supplier AP) and C3 (Buyer AP). Scenario 5 explores whether the Peppol AS4 channel between C2 and C3 can be enhanced or complemented using this QERDS pattern to add qualified delivery evidence to the existing transport.
-
-In the Blueprint's QERDS model, wallets act as the user-facing endpoints while QERDS providers handle routing, inter-provider exchange and evidence creation. The EBW also enables the use of a WE BUILD Digital Directory (simulating the future EU Digital Directory from the EBW Regulation) for endpoint discovery. For Scenario 5, the key research question is whether this delivery layer adds meaningful non-repudiation and legal certainty for eInvoicing beyond what the Peppol network's existing PKI and AS4 receipts already provide.
+A natural structural alignment exists between the Peppol 4-corner model and the QERDS delivery architecture defined in the WE BUILD Blueprint (section 4.4): sender QTSP (A) ↔ C2, recipient QTSP (B) ↔ C3, with the WE BUILD Digital Directory for endpoint discovery. Scenario 5 explores whether this pattern adds meaningful non-repudiation and legal certainty beyond what the existing Peppol PKI and AS4 transport already provide, and evaluates the proportionality of the Qualified (Q) level relative to the ERDS (non-qualified) alternative.
 
 ### 6.2 Pre-conditions
 
 In addition to common pre-conditions (section 2.3):
 
 1. At least one of Scenarios 1 or 2 is operational in the pilot.
-2. A QTSP capable of providing QESeal and/or QERDS services is available to at least one AP in the pilot.
+2. A QTSP capable of providing QESeal and/or QERDS/ERDS services is available to at least one AP in the pilot.
 3. The added mechanisms are not disruptive to the core Peppol flow.
 
 ### 6.3 Main flow
@@ -471,11 +468,12 @@ sequenceDiagram
     autonumber
     participant C1 as C1 (Supplier)
     participant EBW_C1 as EBW C1
-    participant C2 as C2 (Supplier AP / QTSP A)
+    participant C2 as C2 (Supplier AP)
     participant DIR as WE BUILD Digital Directory
-    participant C3 as C3 (Buyer AP / QTSP B)
+    participant C3 as C3 (Buyer AP)
     participant EBW_C4 as EBW C4
     participant C4 as C4 (Buyer)
+    participant QTSP as QTSP / ERDS provider
 
     Note over C1, C4: Scenarios 1 + 2 attestation flows apply (not repeated here)
 
@@ -483,47 +481,54 @@ sequenceDiagram
         Note over C1, C2: Optional enhancement A — QESeal on invoice
         C1 ->> EBW_C1: Request QESeal on invoice document
         EBW_C1 -->> C1: Invoice sealed (QTSP-centric model via EBW)
-        C1 ->> C2: Submit sealed invoice + Approved Supplier attestation
-        C2 ->> C2: Verify seal integrity + verify attestation
+        C1 ->> C2: Submit sealed invoice
+        C2 ->> C2: Verify seal integrity
     end
 
     rect rgb(255, 240, 230)
-        Note over C2, C3: Optional enhancement B — QERDS delivery channel (Blueprint §4.4)
-        C2 ->> DIR: Discover C3 QERDS endpoint (WE BUILD Digital Directory)
+        Note over C2, QTSP: Optional enhancement B — ERDS / QERDS delivery channel (Blueprint §4.4)
+        C2 ->> DIR: Discover C3 ERDS/QERDS endpoint
         DIR -->> C2: C3 endpoint + capabilities
-        C2 ->> C3: Submit invoice via QERDS (sender: QTSP A, recipient: QTSP B)
-        Note over C2, C3: QERDS-to-QERDS handshake, end-to-end end integrity and confidentiality
-        C3 -->> C2: Dispatch evidence (qualified, timestamped)
-        C3 ->> EBW_C4: Deliver invoice + consignment evidence to C4's wallet
-        EBW_C4 -->> C3: Consignment receipt
-        C3 -->> C2: Delivery evidence available
-        Note right of C2: Both C2 and C3 hold qualified delivery evidence
+        C2 ->> QTSP: Submit invoice via ERDS or QERDS (sender side)
+        QTSP -->> C2: Dispatch evidence (timestamped)
+        QTSP ->> C3: Relay to recipient ERDS/QERDS endpoint
+        C3 -->> QTSP: Consignment receipt
+        C3 ->> EBW_C4: Deliver invoice + delivery evidence to C4 wallet
+        Note over C2, C3: Both APs hold timestamped delivery evidence
     end
 ```
 
 ### 6.4 Sub-scenarios under investigation
 
 | Enhancement | Description | Value | Complexity |
-|-------------|-------------|-------|------------|
-| QESeal on invoice | C1 applies a qualified seal to the BIS invoice document before handing to C2 | Non-repudiation, integrity proof | Medium — requires QTSP integration at C1 |
-| QERDS for delivery | C2-to-C3 exchange uses a Qualified Registered Delivery Service | Delivery non-repudiation, legal certainty | High — requires both APs to be connected to QERDS |
-| Wallet data portability | Invoice data or attestation data exported via EBW data portability mechanisms | Portability, audit trail | Low — leverages existing wallet capabilities |
-| ERDS (non-qualified) | Lighter-weight alternative to QERDS using ERDS | Delivery evidence without QTSP | Medium |
+|------------|-------------|-------|------------|
+| QESeal on invoice | C1 applies a qualified seal to the BIS invoice document before handing to C2 | Non-repudiation and integrity proof at document level | Medium — requires QTSP integration at C1 |
+| ERDS delivery evidence | C2-to-C3 exchange routed via a non-qualified registered delivery service | Timestamped delivery proof; proportionate baseline — see §6.5 | Medium |
+| QERDS delivery evidence | As above using a Qualified Registered Delivery Service | Higher assurance delivery proof; included for comparison | High — requires both APs connected to QERDS |
+| EBW data portability | Invoice or attestation data exported via EBW data portability mechanisms | Portability, audit trail, archiving | Low — leverages existing wallet capabilities |
 
-> **Note (trade-off):** Regulatory effectiveness is maximised when control is placed in trust frameworks rather than embedded in interoperability layers. For Scenario 5, the consortium should evaluate whether the added trust value of QESeal/QERDS is proportionate to the operational burden on APs and SMEs. ERDS rather than QERDS may be a more proportionate choice for the Peppol context.
+### 6.5 Proportionality: ERDS over QERDS
 
-### 6.5 Challenges and barriers
+Scenario 5 takes the position that **ERDS is the proportionate delivery layer for Peppol eInvoicing**, and that the Qualified (Q) level of QERDS is not necessary. The Q compensates for the absence of payload-level trust: when the transport channel is the only source of trust it must be qualified. When trust is already established in the data through attestations (Scenarios 1 and 2) and in the sender identity through the Peppol PKI, the channel needs only to be reliable — not qualified.
 
-- **QTSP availability and cost**: qualified services are more expensive and require agreements with QTSPs; this may be a barrier for smaller APs.
-- **Peppol AS4 profile compatibility**: QERDS integration must not break AS4 conformance.
-- **Overlap with Scenarios 1 and 2**: the incremental value of Scenario 5 must be clearly articulated relative to what Scenarios 1 and 2 already achieve.
+> **Principle (Blueprint §6 and SC5 Attestations presentation):** Regulatory effectiveness is maximised when control is placed in trust frameworks rather than embedded in interoperability layers. QERDS places trust in the transport layer — disproportionate when the data and the sender are already trusted through other means.
 
-### 6.6 Working assumptions
+QERDS is included as a comparison point in the pilot. The expected finding is that ERDS delivers sufficient non-repudiation at materially lower cost and operational complexity for APs and SMEs.
+
+### 6.6 Challenges and barriers
+
+- **QTSP availability and cost**: qualified services require QTSP agreements and add operational overhead; this may be a barrier for smaller APs and SMEs.
+- **Peppol AS4 profile compatibility**: ERDS/QERDS integration must not break AS4 conformance; the precise integration point (alongside or replacing AS4) needs definition.
+- **Incremental value over existing infrastructure**: the incremental value of Scenario 5 must be clearly articulated relative to what the existing Peppol PKI and AS4 transport acknowledgements already provide.
+- **Digital Directory readiness**: the WE BUILD Digital Directory (simulating the future EU Digital Directory) must be available for endpoint discovery.
+
+### 6.7 Working assumptions
 
 | # | Assumption | Rationale |
 |---|-----------|-----------|
 | WA5.1 | Scenario 5 is piloted by at most one pair of APs in a single country combination. | The complexity of each enhancement merits focused exploration before broader rollout. |
-| WA5.2 | Results of Scenario 5 are primarily research outputs; go/no-go for production inclusion is deferred to post-pilot evaluation. | The value proposition must be validated before standardization. |
+| WA5.2 | ERDS is the primary target for sub-scenario B; QERDS is included for comparison only if a QTSP partner is available. | The proportionality argument in §6.5 favours ERDS; the pilot should validate this in practice. |
+| WA5.3 | Results of Scenario 5 are primarily research and policy outputs. Go/no-go for production standardisation is deferred to post-pilot evaluation. | The value proposition must be validated before standardisation; findings should feed into OpenPeppol's positioning on registered delivery for eInvoicing. |
 
 ---
 
@@ -538,7 +543,7 @@ sequenceDiagram
 | Supplier's AP (C2) | Verifier (Approved Supplier); Holder/Presenter (Authorized SP) | 1, 2, 3 |
 | Buyer's AP (C3) | Verifier (Authorized SP from C1/C2); Holder/Presenter (Authorized SP from C4) | 2, 3 |
 | Tax Authority (MS A / MS B) | Verifier (Authorized SP attestation for tax reporting) | 3 |
-| QTSP | Trust service provider (QESeal, QERDS) | 5 |
+| QTSP | Trust service provider (QESeal, ERDS/QERDS) | 5 |
 
 ### 7.2 Scenario roles and participants
 
@@ -563,7 +568,7 @@ sequenceDiagram
 | 4. Trusted list registrar | | | |
 | 5. QEAA / EAA provider (Approved Supplier) | | | |
 | 6. QEAA / EAA provider (Authorized SP) | | | |
-| 7. QTSP (QESeal / QERDS) | | | |
+| 7. QTSP / ERDS provider (Scenario 5) | | | |
 
 ### 7.4 Target country combinations
 
@@ -700,9 +705,12 @@ SC5 will reuse the EBWOID (for identifying companies) as a dependency from WP4, 
 | KYB | Know Your Business |
 | KYS | Know Your Supplier |
 | ADR | Architectural Decision Record |
+| CIUS | Core Invoice Usage Specification |
+| ERDS | Electronic Registered Delivery Service |
 | EBWOID | European Business Wallet Organisation Identifier (cross-border minimum organisation identifier) |
 | ITB | Interoperability Testbed |
 | LoTL | List of Trusted Lists |
+| UBL | Universal Business Language |
 | LSP | Large Scale Pilot |
 | MVP | Minimum Viable Product |
 | OpenID4VCI | OpenID for Verifiable Credential Issuance |
