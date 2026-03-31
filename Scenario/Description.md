@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Date** | 2026-03-20 |
-| **Version** | 0.1 (draft) |
+| **Version** | 0.3 (draft) |
 | **Status** | Draft |
 | **Author(s)** | Rune Kjørlaug - OpenPeppol |
 
@@ -193,12 +193,13 @@ sequenceDiagram
         Note over C4, EBW_C1: Phase A — Attestation Issuance (one-time / periodic)
         C4 ->> EBW_C4: Initiate Approved Supplier attestation for C1
         EBW_C4 ->> EBW_C1: Issue Approved Supplier attestation (OpenID4VCI)
-        EBW_C1 -->> C1: Attestation stored and ready for use
+        EBW_C1 -->> EBW_C1: Attestation stored and ready for use
     end
 
     rect rgb(230, 255, 230)
         Note over C1, C4: Phase B — eInvoicing with attestation presentation
-        C1 ->> C2: Submit invoice (Peppol BIS 3.0) + present Approved Supplier attestation (OpenID4VP)
+        C1 ->> C2: Submit invoice (Peppol BIS 3.0)
+        EBW_C1 ->> C2: Present Approved Supplier attestation (OpenID4VP)
         C2 ->> C2: Verify attestation (issuer = C4, subject = C1, not revoked, not expired)
         alt Attestation valid
             C2 ->> C3: Forward invoice (Peppol AS4)
@@ -290,20 +291,21 @@ sequenceDiagram
         Note over C1, EBW_C2: Phase A — C1 authorizes C2 (one-time / on onboarding)
         C1 ->> EBW_C1: Initiate Authorized SP attestation for C2
         EBW_C1 ->> EBW_C2: Issue Authorized SP attestation for C2 (OpenID4VCI)
-        EBW_C2 -->> C2: Attestation stored
+        EBW_C2 -->> EBW_C2: Attestation stored
     end
 
     rect rgb(255, 245, 230)
         Note over C4, EBW_C3: Phase A' — C4 authorizes C3 (one-time / on onboarding)
         C4 ->> EBW_C4: Initiate Authorized SP attestation for C3
         EBW_C4 ->> EBW_C3: Issue Authorized SP attestation for C3 (OpenID4VCI)
-        EBW_C3 -->> C3: Attestation stored
+        EBW_C3 -->> EBW_C3: Attestation stored
     end
 
     rect rgb(230, 255, 230)
         Note over C1, C4: Phase B — eInvoicing with SP-level attestation verification
         C1 ->> C2: Submit invoice (Peppol BIS 3.0)
-        C2 ->> C3: Forward invoice (AS4) + present Authorized SP attestation (OpenID4VP)
+        C2 ->> C3: Forward invoice (AS4)
+        EBW_C2 ->> C3: Present Authorized SP attestation (OpenID4VP)
         C3 ->> C3: Verify attestation (issuer = C1, subject = C2, scope = invoice sending)
         alt Attestation valid
             C3 ->> C4: Deliver invoice
