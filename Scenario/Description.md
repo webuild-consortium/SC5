@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Date** | 2026-03-20 |
-| **Version** | 0.3 (draft) |
+| **Version** | 0.7 |
 | **Status** | Draft |
 | **Author(s)** | Rune Kjørlaug - OpenPeppol |
 
@@ -44,7 +44,7 @@ The document is a product of the Specification Phase of the WE BUILD LSP and ser
 
 ### 1.2 Scenario overview
 
-The SC5 scenarios share a common foundation: the Peppol network's 4-corner model for invoice exchange, enhanced with European Business Wallet (EBW) attestations to strengthen trust, prevent fraud, and enable machine-verifiable authorization. The table below provides an overview.
+The SC5 scenarios 1-3 and 5 share a common foundation: the Peppol network's 4-corner model for invoice exchange, enhanced with European Business Wallet (EBW) attestations to strengthen trust, prevent fraud, and enable machine-verifiable authorization. The table below provides an overview.
 
 | ID | Scenario name | Attestation(s) | MVP |
 |----|--------------|----------------|-----|
@@ -52,6 +52,21 @@ The SC5 scenarios share a common foundation: the Peppol network's 4-corner model
 | 2 | Service Provider authorization | Authorized Service Provider | Y |
 | 3 | SP authorization verifiable by Tax Administration | Authorized Service Provider | N (MVP+) |
 | 5 | Peppol enhancements | As per scenarios 1, 2, 3 | N (MVP+) |
+
+#### Common pilot flows
+
+The pilot will use "real" data where possible - real company names and real identifiers - but in the test-environment provided by WE BUILD. The aim is to be close to production, but the attestations and wallet instances used will not have any legal effect. The invoice itself can (in theory) be a genuine invoice, but we will start using the Peppol test-environment for transport of the invoice.
+
+We aim to reuse the same actors and processes across all the scenarios:
+
+##### Pilot 1 (fake organisations)
+The French company "Les roses D´or" has signed a contract with the Dutch tulip provider "Green flowers" that issues an invoice for the first delivery.
+
+##### Pilot 2
+Id-union issues an invoice to one of their members cross-border from Germany to Bulgaria.
+
+##### Pilot 3
+UPRC buys product x and receives an invoice via GSIS from a B2B router SP. 
 
 ### 1.3 Reference documents
 
@@ -157,7 +172,7 @@ The Peppol-based SC5 scenarios involve machine-to-machine flows between backend 
 
 This is directly applicable to SC5: C2 acts as a Verifier in a fully automated pipeline when it checks attestations on incoming invoice submissions. The OpenID4VP exchange between C1's EBW and C2, or between C2 and C3, is a system-to-system interaction with no human-in-the-loop required at runtime. The working assumptions in each scenario section (WA1.3, WA2.2) are grounded in this architectural pattern.
 
-
+## 3 Scenario 1 - Supplier pre-approval
 
 ### 3.1 Introduction
 
@@ -192,20 +207,18 @@ sequenceDiagram
     rect rgb(230, 240, 255)
         Note over C4, EBW_C1: Phase A — Attestation Issuance (one-time / periodic)
         C4 ->> EBW_C4: Initiate Approved Supplier attestation for C1
-        EBW_C4 ->> EBW_C1: Issue Approved Supplier attestation (OpenID4VCI)
+        EBW_C4 ->> EBW_C1: Issue Approved Supplier attestation
         EBW_C1 -->> EBW_C1: Attestation stored and ready for use
     end
 
     rect rgb(230, 255, 230)
         Note over C1, C4: Phase B — eInvoicing with attestation presentation
         C1 ->> C2: Submit invoice (Peppol BIS 3.0)
-        EBW_C1 ->> C2: Present Approved Supplier attestation (OpenID4VP)
+        EBW_C1 ->> C2: Present Approved Supplier attestation
         C2 ->> C2: Verify attestation (issuer = C4, subject = C1, not revoked, not expired)
         alt Attestation valid
             C2 ->> C3: Forward invoice (Peppol AS4)
             C3 ->> C4: Deliver invoice
-            C2 -->> C1: Confirm invoice submitted (AS4 acknowledgement from C3)
-            Note over C3, C4: No mandatory receipt from C4 in current Peppol.<br/>MLR/MLS work underway — see §2.1.
         else Attestation invalid or absent
             C2 -->> C1: Reject invoice (with reason)
         end
@@ -213,6 +226,7 @@ sequenceDiagram
 ```
 
 ### 3.4 Detailed scenario flow
+
 
 | Step | Actor | Description | Dependencies | Variations / exceptions |
 |------|-------|-------------|--------------|------------------------|
@@ -290,14 +304,14 @@ sequenceDiagram
     rect rgb(230, 240, 255)
         Note over C1, EBW_C2: Phase A — C1 authorizes C2 (one-time / on onboarding)
         C1 ->> EBW_C1: Initiate Authorized SP attestation for C2
-        EBW_C1 ->> EBW_C2: Issue Authorized SP attestation for C2 (OpenID4VCI)
+        EBW_C1 ->> EBW_C2: Issue Authorized SP attestation for C2 
         EBW_C2 -->> EBW_C2: Attestation stored
     end
 
     rect rgb(255, 245, 230)
         Note over C4, EBW_C3: Phase A' — C4 authorizes C3 (one-time / on onboarding)
         C4 ->> EBW_C4: Initiate Authorized SP attestation for C3
-        EBW_C4 ->> EBW_C3: Issue Authorized SP attestation for C3 (OpenID4VCI)
+        EBW_C4 ->> EBW_C3: Issue Authorized SP attestation for C3 
         EBW_C3 -->> EBW_C3: Attestation stored
     end
 
@@ -305,7 +319,7 @@ sequenceDiagram
         Note over C1, C4: Phase B — eInvoicing with SP-level attestation verification
         C1 ->> C2: Submit invoice (Peppol BIS 3.0)
         C2 ->> C3: Forward invoice (AS4)
-        EBW_C2 ->> C3: Present Authorized SP attestation (OpenID4VP)
+        EBW_C2 ->> C3: Present Authorized SP attestation
         C3 ->> C3: Verify attestation (issuer = C1, subject = C2, scope = invoice sending)
         alt Attestation valid
             C3 ->> C4: Deliver invoice
@@ -549,38 +563,78 @@ QERDS is included as a comparison point in the pilot. The expected finding is th
 
 ### 7.2 Scenario roles and participants
 
-> ⚠️ *To be completed with actual partner names and countries during specification phase.*
+#### Pilot 1
+The French company "Les roses D´or" (Banqup: SP, W) has signed a contract with the dutch tulip provider "Green flowers (TBA)" (Sphereon: W, Semansys SP).
 
+#### Pilot 2
+Id-union issues an invoice to one of their members (cross border - Datev and B2B router?) - Germany and Bulgaria
+
+##### Pilot 3
+UPRC (GU-net) buys and recieves an invoice via SP:GSIS from a SP:B2B router from Ansgar (W:ValidateID) 
+
+#### Invoicing Service providers
+- B2B Router: Spain - France, Austria, Poland, Germany, Greece
+- Banqup: Netherlands, France, Belgium, Estland, Norway/Nordics, Italy, EU/EEA
+- Datev: Germany
+- Semansys: BeNeLux
+- Eliva: Greece
+- GSIS: Greece
+
+#### EUBW providers:
+- Sphereon: EU/EEA (Netherlands)
+- Credenco: TBC
+- IdUnion: TBC
+- Banqup: France, Belgium (Belgium)
+- ValidatedId: Spain, Italy, France (Spain)
+- GU-net: Greece
+
+##### Pilot 1
 | Primary role | UC partner name | Country |
 |-------------|----------------|---------|
-| 1. Supplier (C1) | | |
-| 2. Buyer (C4) | | |
-| 3. Supplier's AP (C2) | | |
-| 4. Buyer's AP (C3) | | |
-| 5. Tax Authority (MS A) | | |
-| 6. Tax Authority (MS B) | | |
+| 1. Supplier (C1) | "Green flowers" (fake) | Netherland |
+| 2. Buyer (C4) | "Les roses D´or" (fake) | France |
+| 3. Supplier's AP (C2) | Banqup | |
+| 4. Buyer's AP (C3) | Semansys | |
+| 5. EBW provider (Supplier) | Banqup | |
+| 6. EBW provider (Buyer) | Sphereon | |
+
+##### Pilot 2
+| Primary role | UC partner name | Country |
+|-------------|----------------|---------|
+| 1. Supplier (C1) | IdUnion | Germany |
+| 2. Buyer (C4) | TBD | Bulgaria |
+| 3. Supplier's AP (C2) | Datev | |
+| 4. Buyer's AP (C3) | B2BRouter? | |
+| 5. EBW provider (Supplier) | TBD (from IdUnion) | |
+| 6. EBW provider (Buyer) | TBD (from IdUnion) | |
+
+##### Pilot 3
+| Primary role | UC partner name | Country |
+|-------------|----------------|---------|
+| 1. Supplier (C1) | TBD (by B2B router) | Spain? |
+| 2. Buyer (C4) | UPRC | Greece |
+| 3. Supplier's AP (C2) | B2B router | |
+| 4. Buyer's AP (C3) | GSIS | Greece |
+| 5. EBW provider (Supplier) | ValidateID | |
+| 6. EBW provider (Buyer) | GU-net | |
 
 ### 7.3 Additional roles and partners
 
 | Primary role | UC partner name | Country | Wallet |
 |-------------|----------------|---------|--------|
-| 1. EBW provider (Supplier) | | | |
-| 2. EBW provider (Buyer) | | | |
-| 3. EBWOID provider | | | |
-| 4. Trusted list registrar | | | |
-| 5. QEAA / EAA provider (Approved Supplier) | | | |
-| 6. QEAA / EAA provider (Authorized SP) | | | |
-| 7. QTSP / ERDS provider (Scenario 5) | | | |
+| 1. Tax authority (Supplier) | TBD | | |
+| 2. Tax authority (Buyer) | TBD | | |
 
 ### 7.4 Target country combinations
 
-> ⚠️ *To be completed once partner recruitment is finalized.*
-
-| Sending MS \ Receiving MS | MS A | MS B | MS C | ... |
-|--------------------------|------|------|------|-----|
-| MS A | — | Y | | |
-| MS B | Y | — | | |
-| MS C | | | — | |
+| Sending MS \ Receiving MS | France | Netherland | Germany | Bulgaria | Spain | Greece |
+|--------------------------|------|------|------|-----|-----|-----|
+| France | — | Y | | | | |
+| Netherland | Y | — | | | | |
+| Germany | | | — | Y | | |
+| Bulgaria | | | Y | - | | |
+| Spain | | | | |- | Y |
+| Greece | | | | | Y | - |
 
 ### 7.5 Requirements
 
