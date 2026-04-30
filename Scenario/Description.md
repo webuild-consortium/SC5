@@ -47,12 +47,12 @@ The suite is organised as follows:
 
 | File | Content |
 |------|---------|
-| **SC5_Introduction.md** (this file) | Common introduction, concepts, roles, attestations and abbreviations shared across all scenarios |
-| **SC5_Scenario1_SupplierPreApproval.md** | Scenario 1 — Supplier pre-approval |
-| **SC5_Scenario2_ServiceProviderAuthorization.md** | Scenario 2 — Service Provider authorization |
-| **SC5_Scenario3_SPAuthorizationTaxAdmin.md** | Scenario 3 — Service Provider authorization verifiable by Tax Administration |
-| **SC5_Scenario4_DirectEInvoicing.md** | Scenario 4 — Direct eInvoicing between Business Wallets |
-| **SC5_Scenario5_PeppolEnhancements.md** | Scenario 5 — Peppol enhancements |
+| Introduction (this file) | Common introduction, concepts, roles, attestations and abbreviations shared across all scenarios |
+| [Scenario 1](Scenario1.md) | Scenario 1 — Supplier pre-approval |
+| [Scenario 2](Scenario2.md) | Scenario 2 — Service Provider authorization |
+| [Scenario 3](Scenario3.md) | Scenario 3 — Service Provider authorization verifiable by Tax Administration |
+| [Scenario 4](Scenario4.md) | Scenario 4 — Direct eInvoicing between Business Wallets |
+| [Scenario 5](Scenario5.md) | Scenario 5 — Peppol enhancements |
 
 This suite is a product of the Specification Phase of the WE BUILD LSP and serves as a key input to solution development and pilot preparation.
 
