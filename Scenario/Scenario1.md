@@ -9,7 +9,7 @@
 | **Status** | Draft |
 | **Author(s)** | Rune Kjørlaug - OpenPeppol |
 
-> **Part of the SC5 eInvoicing specification suite.** Read [SC5_Introduction.md](SC5_Introduction.md) for common concepts, roles, attestations and abbreviations.
+> **Part of the SC5 eInvoicing specification suite.** Read [Introduction.md](Introduction.md) for common concepts, roles, attestations and abbreviations.
 
 ---
 

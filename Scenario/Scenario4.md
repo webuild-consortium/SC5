@@ -5,11 +5,11 @@
 | | |
 |---|---|
 | **Date** | 2026-04-29 |
-| **Version** | 0.6 |
+| **Version** | 0.7 |
 | **Status** | Draft |
-| **Author(s)** | Rune Kjørlaug - OpenPeppol |
+| **Author(s)** | Maarten Boender - Sphereon |
 
-> **Part of the SC5 eInvoicing specification suite.** Read [SC5_Introduction.md](SC5_Introduction.md) for common concepts, roles, attestations and abbreviations.
+> **Part of the SC5 eInvoicing specification suite.** Read [Introduction.md](Introduction.md) for common concepts, roles, attestations and abbreviations.
 
 ---
 

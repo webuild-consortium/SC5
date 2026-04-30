@@ -204,31 +204,15 @@ This is directly applicable to SC5: C2 acts as a Verifier in a fully automated p
 | Business actor | ARF role | Scenarios |
 |---------------|----------|-----------|
 | Buyer (C4) | Issuer (Approved Supplier; Authorized SP for C3) | 1, 2, 3, 5 |
-| Supplier (C1) | Holder/Presenter (Approved Supplier); Issuer (Authorized SP for C2) | 1, 2, 3, 5 |
+| Supplier (C1) | Holder/Presenter (Approved Supplier); Issuer (Authorized SP for C2, eInvoice to C4) | 1, 2, 3, 4, 5 |
 | Supplier's AP (C2) | Verifier (Approved Supplier); Holder/Presenter (Authorized SP) | 1, 2, 3, 5 |
 | Buyer's AP (C3) | Verifier (Authorized SP from C1/C2); Holder/Presenter (Authorized SP from C4) | 2, 3, 5 |
 | Tax Authority (MS A / MS B) | Verifier (Authorized SP attestation for tax reporting) | 3 |
-| Supplier (Business Wallet) | Issuer (eInvoice Attestation) | 4 |
-| Buyer (Business Wallet) | Holder/Verifier (eInvoice Attestation) | 4 |
+| Supplier (Business Wallet) | Issuer (eInvoice Attestation) | 1, 2, 3, 4, 5 |
+| Buyer (Business Wallet) | Holder/Verifier (eInvoice Attestation) | 1, 2, 3, 4, 5 |
 | QTSP | Trust service provider (QESeal, ERDS/QERDS) | 5 |
 
 ### 3.2 Pilot compositions
-
-#### Invoicing Service Providers
-- B2B Router: Spain, France, Austria, Poland, Germany, Greece
-- Banqup: Netherlands, France, Belgium, Estonia, Norway/Nordics, Italy, EU/EEA
-- Datev: Germany
-- Semansys: BeNeLux
-- Eliva: Greece
-- GSIS: Greece
-
-#### EBW Providers
-- Sphereon: EU/EEA (Netherlands)
-- Credenco: TBC
-- IdUnion: TBC
-- Banqup: France, Belgium
-- ValidatedId: Spain, Italy, France
-- GU-net: Greece
 
 #### Pilot 1 (Scenarios 1, 2, 3, 5)
 
@@ -298,18 +282,6 @@ This is directly applicable to SC5: C2 acts as a Verifier in a fully automated p
 | Spain | | | | | — | Y |
 | Greece | | | | | Y | — |
 
-#### Scenario 4 (Direct eInvoicing)
-
-| | **Issuing country** | | | | | | |
-|---|---|---|---|---|---|---|---|
-| **Relying Party country** | | AT | BE | DE | FI | FR | NL |
-| | AT | | | | | | |
-| | BE | | | | | | |
-| | DE | | | | | | |
-| | FI | | | | | | |
-| | FR | | | | | | |
-| | NL | | | | | | |
-
 ### 3.5 Requirements
 
 The main functional, organizational and technical requirements for each role are included in Annex 1 of each individual scenario file.
@@ -330,7 +302,6 @@ SC5 reuses the EBWOID (for identifying companies) as a dependency from WP4, but 
 |-----------------|-------------------|------------------|--------------|
 | EBWOID | European Business Wallet Organisation Identifier — the cross-border minimum organisation identifier in the WE BUILD ecosystem, providing a stable, wallet-bound basis for identifying legal persons across Member States. Successor to the LPID concept from earlier LSPs. | WP4 — PID & EBWOID Providers group | Must include: EUID (ISO 6523-compliant), legal name, registered address, VAT number (where applicable). Used to uniquely identify C1, C2, C3 and C4 in attestation subject/issuer fields. Availability in all piloting Member States is a critical path dependency. |
 | EUCC | EU Company Certificate; richer set of company attributes | WP4 / EWC RB002 | Optional enhancement for richer verification; not required for MVP. |
-| Approved Supplier | Approved Supplier attestation (for use in Scenario 4) | SC5 WG1 | All countries |
 
 ### 4.3 Attestations created in SC5
 
@@ -392,8 +363,6 @@ SC5 reuses the EBWOID (for identifying companies) as a dependency from WP4, but 
 | **ARF attestation type** | EAA |
 | **Credential format** | SD-JWT-VC |
 | **Applicable domain standards** | EN16931-UBL and/or Peppol BIS3 |
-
-Schema status and full claim set to be defined by SC5 WG2 in coordination with WP4 semantics.
 
 ---
 
