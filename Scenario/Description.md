@@ -151,8 +151,8 @@ The core idea of SC5 (Peppol-based scenarios) is that the invoice itself remains
 
 Two new attestation types are introduced for the Peppol-based scenarios:
 
-- **Approved Supplier attestation** — issued by a Buyer (C4) to a Supplier (C1), proving that C4 has an active commercial relationship with C1 and approves invoices from them.
-- **Authorized Service Provider attestation** — issued by a company (C1 or C4) to its Service Provider (C2 or C3), proving that the SP is authorized to send or receive invoices on the company's behalf.
+- **Approved Supplier attestation** — issued by a Buyer (C4) to a Supplier (C1), proving the existence of a trusted and acknowledged contractual relationship between the two legal entities. The parties are implicitly determined by the Wallet Instances involved, each bound to a verified legal entity. The attestation may be grounded in a public authoritative source (e.g. a contract award notice on TED) or in contractual evidence or buyer acknowledgement.
+- **Authorized Service Provider attestation** — issued by a company (C1 or C4) to its Service Provider (C2 or C3), proving that the SP is authorised to act on the company's behalf for one or more explicitly defined functions, including sending or receiving electronic invoices, and submitting VAT or transaction data to tax authorities. Legal identity of the mandating business and the SP is not asserted in the attestation itself; it is established through separate legal person attestations (e.g. EUCC).
 
 Both attestation types are Electronic Attestations of Attributes (EAA) in the sense of eIDAS 2.0. Whether they need to be Qualified (QEAA) is a working assumption pending further analysis.
 
@@ -305,7 +305,7 @@ SC5 reuses the EBWOID (for identifying companies) as a dependency from WP4, but 
 
 ### 4.3 Attestations created in SC5
 
-#### Approved Supplier attestation (Scenarios 1, 4, 5)
+#### [Approved Supplier attestation](../Attestations/ApprovedSupplier.md) (Scenarios 1, 4, 5)
 
 | Attribute | Value |
 |-----------|-------|
@@ -315,21 +315,20 @@ SC5 reuses the EBWOID (for identifying companies) as a dependency from WP4, but 
 | **ARF attestation type** | EAA (QEAA pending analysis) |
 | **Credential format** | SD-JWT-VC |
 
-**Required claims:**
+The parties (Buyer and Supplier) are implicitly determined by the Wallet Instances involved and are not embedded as explicit identity claims in the attestation. Legal identity is established through separate attestations (e.g. EUCC).
 
-| Claim | Description |
-|-------|-------------|
-| `issuer_id` | EBWOID / EUID of the Buyer (C4) |
-| `issuer_name` | Legal name of the Buyer |
-| `subject_id` | EBWOID / EUID of the Supplier (C1) |
-| `subject_name` | Legal name of the Supplier |
-| `approval_date` | Date from which the approval is valid |
-| `expiry_date` | Date until which the approval is valid |
-| `scope` | Scope of approval (e.g. `peppol:einvoice`, `all`) |
-| `buyer_peppol_id` | Peppol participant identifier of the Buyer |
-| `supplier_peppol_id` | Peppol participant identifier of the Supplier |
+**Key attributes (from attestation spec):**
 
-#### Authorized Service Provider attestation (Scenarios 2, 3, 5)
+| Attribute | M/O | Description |
+|-----------|-----|-------------|
+| `relationship_id` | M | Unique identifier of the acknowledged relationship |
+| `relationship_type` | M | Type of relationship (code list: `contractual`, `framework_agreement`, `public_contract_award`, `private_contract`, `buyer_acknowledgement`) |
+| `relationship_status` | M | Current status — SHALL be `active` for eInvoicing trust decisions |
+| `relationship_start_date` | M | Start date of the acknowledged relationship |
+| `relationship_end_date` | O | End date of the relationship, if applicable |
+| `authoritative_source` | O | Reference to the authoritative source or evidence (Source reference object) |
+
+#### [Authorized Service Provider attestation](../Attestations/AuthorizedServiceProvider.md) (Scenarios 2, 3, 5)
 
 | Attribute | Value |
 |-----------|-------|
@@ -339,21 +338,21 @@ SC5 reuses the EBWOID (for identifying companies) as a dependency from WP4, but 
 | **ARF attestation type** | EAA (QEAA pending analysis) |
 | **Credential format** | SD-JWT-VC |
 
-**Required claims:**
+Legal identity of the mandating business and the service provider is NOT asserted in this attestation — it SHALL be established through separate legal person attestations (e.g. EUCC). The mandating business is referenced via a structured object containing its VAT number and country code, sufficient for relying party processing.
 
-| Claim | Description |
-|-------|-------------|
-| `issuer_id` | EBWOID / EUID of the authorizing company |
-| `issuer_name` | Legal name of the authorizing company |
-| `subject_id` | EBWOID / EUID of the Service Provider |
-| `subject_name` | Legal name of the Service Provider |
-| `authorization_date` | Date from which the authorization is valid |
-| `expiry_date` | Date until which the authorization is valid |
-| `scope` | Comma-separated list: `peppol:send`, `peppol:receive`, `vida:tax_report` |
-| `company_peppol_id` | Peppol participant ID of the authorizing company |
-| `sp_peppol_ap_id` | Peppol AP identifier of the Service Provider |
+**Key attributes (from attestation spec):**
 
-#### eInvoice Attestation (Scenario 4)
+| Attribute | M/O | Description |
+|-----------|-----|-------------|
+| `mandate_id` | M | Unique identifier of the mandate |
+| `mandate_type` | M | Type of mandate (code list: `invoice_sending`, `invoice_receiving`, `vat_reporting`, `transaction_reporting`) |
+| `mandate_start_date` | M | Start date of the mandate |
+| `mandate_end_date` | O | End date of the mandate, if applicable |
+| `mandating_business` | M | Reference to the mandating business (Mandating business reference object: `vat_number` M, `country_code` M, `business_identifier` O) |
+| `mandate_scope` | M | Scope within which the SP is authorised to act (Mandate scope object: `scope_type` M from code list `einvoicing` / `vat_reporting` / `regulatory_reporting`; `vat_reporting_scope` O) |
+| `authority_source` | O | Reference to the authentic source supporting the mandate (Authority reference object) |
+
+#### [eInvoice Attestation](../Attestations/eInvoice.md) (Scenario 4)
 
 | Attribute | Value |
 |-----------|-------|
