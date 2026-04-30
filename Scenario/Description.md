@@ -58,21 +58,21 @@ This suite is a product of the Specification Phase of the WE BUILD LSP and serve
 
 ### 1.2 Scenario overview
 
-The SC5 scenarios share a common foundation where applicable. Scenarios 1, 2, 3 and 5 are built on the Peppol network's 4-corner model, enhanced with European Business Wallet (EBW) attestations to strengthen trust and enable machine-verifiable authorization. Scenario 4 bypasses the Peppol network entirely, with the Supplier delivering an eInvoice Attestation directly to the Buyer's Business Wallet via OID4VP.
+The SC5 scenarios share a common foundation where applicable. Scenarios 1, 2, 3 and 5 are built on the Peppol network's 4-corner model, enhanced with European Business Wallet (EBW) attestations to strengthen trust and enable machine-verifiable authorization. Scenario 4 uses the "reference attestation" concept to enable the Buyer's Business Wallet to pull the eInvoice from the Sender, independent on transfer mechanism.
 
 | ID | Scenario name | Attestation(s) | Transport | MVP |
 |----|--------------|----------------|-----------|-----|
 | 1 | Supplier pre-approval | Approved Supplier | Peppol AS4 | Y |
 | 2 | Service Provider authorization | Authorized Service Provider | Peppol AS4 | Y |
-| 3 | SP authorization verifiable by Tax Administration | Authorized Service Provider | Peppol AS4 + TA API | N (MVP+) |
+| 3 | SP authorization verifiable by Tax Administration | Authorized Service Provider | Peppol AS4 + TA API | MVP+ |
 | 4 | Direct eInvoicing between Business Wallets | eInvoice Attestation | OID4VP/DCQL | Y |
-| 5 | Peppol enhancements | As per scenarios 1, 2, 3 | Peppol AS4 + ERDS/QERDS | N (MVP+) |
+| 5 | Peppol enhancements | As per scenarios 1, 2, 3 | Peppol AS4 + ERDS/QERDS | MVP+ |
 
-Scenarios 1 and 2 are part of the Minimum Viable Product (MVP). Scenarios 3, 4 and 5 are designated MVP+.
+Scenarios 1, 2 and 4 are part of the Minimum Viable Product (MVP). Scenarios 3 and 5 are designated MVP+.
 
 #### Common pilot flows (Peppol-based scenarios)
 
-The pilot will use real data where possible — real company names and real identifiers — but in the test environment provided by WE BUILD. The aim is to be close to production, but the attestations and wallet instances used will not have any legal effect. The invoice itself can in theory be a genuine invoice, but we will start using the Peppol test environment for transport.
+The pilot will use real data where possible — real company names and real identifiers — but in the test environment provided by WE BUILD. The aim is to be close to production, but the attestations and wallet instances used will not have any legal effect. The invoice itself can in theory be a genuine invoice, but we will start using the Peppol test environment for transport (where relevant).
 
 We aim to reuse the same actors and processes across Scenarios 1, 2, 3 and 5:
 
@@ -158,7 +158,7 @@ Both attestation types are Electronic Attestations of Attributes (EAA) in the se
 
 Scenario 4 introduces a third type:
 
-- **eInvoice Attestation** — a verifiable representation of an invoice exchange event, issued by the Supplier's Business Wallet, binding invoice content (via a payload hash) to a cryptographic signature associated with the Supplier's legal-person identity.
+- **eInvoice Attestation** — a verifiable representation of an invoice exchange event, issued by the Supplier's Business Wallet, binding invoice content (via a payload hash) to a cryptographic signature associated with the Supplier's legal-person identity. In the regulation this is called a reference attestation.
 
 ### 2.3 Common pre-conditions (Peppol-based scenarios)
 
