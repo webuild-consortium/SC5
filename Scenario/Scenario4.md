@@ -184,7 +184,7 @@ sequenceDiagram
 
 **Onboarding or Discovery:** how do Supplier and Buyer find each other's Business Wallets?
 
-Answer: The [ETSI TS 119 602](https://www.etsi.org/deliver/etsi_TS/119600_119699/119602/01.01.01_60/) specification describes the List of Trusted Entities (LoTE). It offers the necessary data and describes the mechanisms for Discovery and Verification.
+Answer: The [ETSI TS 119 602](https://www.etsi.org/deliver/etsi_TS/119600_119699/119602/01.01.01_60/) specification describes the List of Trusted Entities (LoTE). The EC is proposing the European Digital Directory (EDD) for this. It offers the necessary data and describes the mechanisms for Discovery and Verification. There is an [ADR](https://github.com/webuild-consortium/wp4-architecture/pull/145) proposed for this.
 
 For now the transport protocol will be OID4VP & DCQL. Depending on the upcoming Implementing Acts we may also need to pilot another transport protocol (QERDS?).
 
