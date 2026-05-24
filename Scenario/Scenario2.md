@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| **Date** | 2026-04-29 |
-| **Version** | 0.7 |
-| **Status** | Draft |
+| **Date** | 2026-05-24 |
+| **Version** | 1.0 |
+| **Status** | Final |
 | **Author(s)** | Rune Kjørlaug - OpenPeppol |
 
 > **Part of the SC5 eInvoicing specification suite.** Read [Introduction.md](Introduction.md) for common concepts, roles, attestations and abbreviations.
@@ -69,13 +69,6 @@ sequenceDiagram
         EBW_C2 -->> EBW_C2: Attestation stored
     end
 
-    rect rgb(255, 245, 230)
-        Note over C4, EBW_C3: Phase A' — C4 authorizes C3 (one-time / on onboarding)
-        C4 ->> EBW_C4: Initiate Authorized SP attestation for C3
-        EBW_C4 ->> EBW_C3: Issue Authorized SP attestation for C3 (OpenID4VCI)
-        EBW_C3 -->> EBW_C3: Attestation stored
-    end
-
     rect rgb(230, 255, 230)
         Note over C1, C4: Phase B — eInvoicing with SP-level attestation verification
         C1 ->> C2: Submit invoice (Peppol BIS 3.0)
@@ -101,7 +94,6 @@ sequenceDiagram
 |------|-------|-------------|--------------|------------------------|
 | A.1 | C1 | C1 initiates the issuance of an Authorized SP attestation for C2 via C1's EBW. The attestation certifies that C2 is authorized to send invoices on behalf of C1. | EBWOID for C2 must be resolvable; Authorized SP schema available | Attestation may be scoped to specific document types or Peppol process IDs |
 | A.2 | EBW C1 → EBW C2 | C1's EBW issues the attestation to C2's EBW via OpenID4VCI. | OpenID4VCI interoperability | — |
-| A'.1 | C4 | C4 issues an Authorized SP attestation for C3 (mirror of A.1 on the receiving side). | — | This step is optional for the MVP; see WA2.1 |
 | B.1 | C1 → C2 | C1 submits invoice to C2 through normal Peppol onboarding channel. | — | Optionally combined with Scenario 1 attestation presentation |
 | B.2 | C2 → C3 | C2 sends the invoice to C3 via Peppol AS4. As part of the AS4 exchange (or a preceding handshake), C2 presents its Authorized SP attestation to C3 via OpenID4VP. | C3 supports OpenID4VP; trust registry accessible | Timing of attestation presentation (before AS4, during AS4 header, or as separate API call) to be specified |
 | B.3 | C3 | C3 verifies: (a) attestation issuer = C1, (b) subject = C2, (c) validity period, (d) not revoked, (e) scope covers invoice transmission. | Trust registry; revocation endpoint | C3 may also verify C4 has authorized it (if A' was performed) |

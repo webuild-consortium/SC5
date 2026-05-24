@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| **Date** | 2026-04-29 |
-| **Version** | 0.7 |
-| **Status** | Draft |
+| **Date** | 2026-05-24 |
+| **Version** | 1.0 |
+| **Status** | Final |
 | **Author(s)** | Rune Kjørlaug - OpenPeppol |
 
 > **Part of the SC5 eInvoicing specification suite.** Read [Introduction.md](Introduction.md) for common concepts, roles, attestations and abbreviations.

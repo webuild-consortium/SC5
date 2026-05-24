@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| **Date** | 2026-04-29 |
-| **Version** | 0.7 |
-| **Status** | Draft |
+| **Date** | 2026-05-24 |
+| **Version** | 1.0 |
+| **Status** | Final |
 | **Author(s)** | Rune Kjørlaug - OpenPeppol |
 
 ---
@@ -301,7 +301,7 @@ SC5 reuses the EBWOID (for identifying companies) as a dependency from WP4, but 
 | Attestation name | Short description | To be provided by | Requirements |
 |-----------------|-------------------|------------------|--------------|
 | EBWOID | European Business Wallet Organisation Identifier — the cross-border minimum organisation identifier in the WE BUILD ecosystem, providing a stable, wallet-bound basis for identifying legal persons across Member States. Successor to the LPID concept from earlier LSPs. | WP4 — PID & EBWOID Providers group | Must include: EUID (ISO 6523-compliant), legal name, registered address, VAT number (where applicable). Used to uniquely identify C1, C2, C3 and C4 in attestation subject/issuer fields. Availability in all piloting Member States is a critical path dependency. |
-| EUCC | EU Company Certificate; richer set of company attributes | WP4 / EWC RB002 | Optional enhancement for richer verification; not required for MVP. |
+| EUCC (optional) | EU Company Certificate; richer set of company attributes | BU2 | Optional enhancement for richer verification; not required for MVP. |
 
 ### 4.3 Attestations created in SC5
 
@@ -315,7 +315,7 @@ SC5 reuses the EBWOID (for identifying companies) as a dependency from WP4, but 
 | **ARF attestation type** | EAA (QEAA pending analysis) |
 | **Credential format** | SD-JWT-VC |
 
-The parties (Buyer and Supplier) are implicitly determined by the Wallet Instances involved and are not embedded as explicit identity claims in the attestation. Legal identity is established through separate attestations (e.g. EUCC).
+The parties (Buyer and Supplier) are implicitly determined by the Wallet Instances involved and are not embedded as explicit identity claims in the attestation. Legal identity is established through separate attestations (EBWOID).
 
 **Key attributes (from attestation spec):**
 
@@ -338,7 +338,7 @@ The parties (Buyer and Supplier) are implicitly determined by the Wallet Instanc
 | **ARF attestation type** | EAA (QEAA pending analysis) |
 | **Credential format** | SD-JWT-VC |
 
-Legal identity of the mandating business and the service provider is NOT asserted in this attestation — it SHALL be established through separate legal person attestations (e.g. EUCC). The mandating business is referenced via a structured object containing its VAT number and country code, sufficient for relying party processing.
+Legal identity of the mandating business and the service provider is NOT asserted in this attestation — it SHALL be established through separate legal person attestations (e.g. EBWOID). The mandating business is referenced via a structured object containing its VAT number and country code, sufficient for relying party processing.
 
 **Key attributes (from attestation spec):**
 
