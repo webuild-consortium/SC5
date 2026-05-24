@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Date** | 2026-04-29 |
-| **Version** | 0.7 |
+| **Date** | 2026-05-24 |
+| **Version** | 0.9 |
 | **Status** | Draft |
 | **Author(s)** | Maarten Boender - Sphereon |
 
@@ -36,7 +36,32 @@
 
 Scenario 4 is a cross-border pilot of direct eInvoice exchange where a Supplier issues an eInvoice Attestation and delivers it using their Business Wallet directly to a Buyer Business Wallet, which verifies invoice integrity, supplier identity, and authorization.
 
-Unlike Scenarios 1–3 and 5, this scenario does **not** use the Peppol 4-corner model. Instead, the transport layer is OID4VP/DCQL in a machine-to-machine context, with wallet-to-wallet direct delivery.
+Scenario 4 is the only scenario that works independently from the chosen transport layer as it delivers an eInvoice Attestation directly from the Supplier's Business Wallet to the Buyer's Business Wallet in a machine-to-machine context without an intermediary. Trust is not delegated to a network of access points; instead, it is established cryptographically at the point of exchange, through the Supplier's identity binding using the List of Trusted Entities (LoTE) and the integrity of the attestation itself. 
+
+This makes Scenario 4 a pilot to test whether wallet-native, peer-to-peer eInvoice exchange, can meet the same integrity and identity assurance requirements as network-intermediated delivery, independent of a shared infrastructure operator in the middle.
+
+```mermaid
+---
+title: Scenario 4 – direct wallet-to-wallet
+---
+flowchart LR
+    A[Supplier ERP]
+    B["Supplier EBW\nIssues + signs attestation"]
+    C["Buyer EBW\nVerifies & accepts"]
+    D[Buyer ERP]
+    E["EU Trust Framework\nLoTE / EDD / Trust Lists"]
+
+    A --> B
+    B --> C
+    C --> D
+    E -.-> B
+    E -.-> C
+
+    classDef ebw fill:#8fbc8f,stroke:#5a8a5a,color:#000
+    classDef plain fill:#e8e8e8,stroke:#aaaaaa,color:#000
+    class B,C ebw
+    class A,D,E plain
+```
 
 The eInvoice Attestation is a verifiable representation (Reference Attestation) of an invoice exchange event, binding invoice content (via a payload hash) to a cryptographic signature associated with the Supplier's legal-person identity. It is used by a Buyer to:
 
@@ -74,109 +99,61 @@ To establish trust, either the Approved Supplier attestation (as defined in Scen
 
 ## 3. Main flow
 
-The overview below shows the high-level trust setup between Buyer, Trust Registry and Supplier before direct delivery:
+The flow begins at the Supplier's ERP, which prepares the eInvoice according to the EN16931 semantic model. 
+The payload is canonicalized and an invoicePayloadHash is computed following the agreed rulebook. The ERP submits the payload and associated metadata to the Supplier's European Business Wallet (EBW), which creates and cryptographically signs the eInvoice Attestation.
 
-```mermaid
-sequenceDiagram
-    participant Buyer
-    participant Trust_Registry
-    participant Supplier
+Before delivery, the Supplier's Wallet resolves the Buyer's Wallet address (a URL endpoint) by consulting the List of Trusted Entities (LoTE), as specified in ETSI TS 119 602. The Supplier's Wallet then presents the eInvoice Attestation directly to the Buyer's Wallet, using the OID4VP/DCQL profile in a machine-to-machine context.
 
-    Buyer ->> Trust_Registry: Create a Trusted List for preferred suppliers
-    Supplier ->> Buyer: send eInvoice
-    Buyer ->> Buyer: review eInvoice
-    Supplier ->> Trust_Registry: List supplier
-```
+Upon receipt, the Buyer's Wallet performs a sequence of verification steps: it resolves the Supplier's issuer metadata from the Trust Registry and checks the Supplier's authorization status (revocation, expiry, or suspension) against the Status Service. It then verifies the cryptographic signature on the eInvoice Attestation, confirms the Supplier's EUCC/LPID identity binding, verifies that the invoice's buyer field matches the receiving Wallet's identity. Upon reciept of the invoice it recomputes the invoicePayloadHash to confirm the integrity and autenticity of the invoice.
 
-### 3.1 eInvoice preparation and sending by Supplier
+If evidence references are present in the attestation, the Buyer's Wallet retrieves the referenced artefacts from the Evidence Store and verifies their integrity and validity. If no evidence references are present, this step is skipped.
 
-```mermaid
-sequenceDiagram
-    participant Supplier_ERP as Supplier_ERP
-    participant Supplier_Wallet as Supplier_Wallet
-    participant Buyer_Wallet as Buyer_Wallet
-    participant Trust_Registry as Trust_Registry
-    participant Status_Service as Status_Service
-    participant Evidence_Store as Evidence_Store
-
-    rect rgb(220, 230, 245)
-        Note over Supplier_ERP, Evidence_Store: Invoice preparation and attestation issuance (Supplier)
-        Supplier_ERP ->> Supplier_ERP: Prepare eInvoice (EN16931)
-        Note over Supplier_ERP: Canonicalize payload + compute invoicePayloadHash (rulebook-defined)
-        Supplier_ERP ->> Supplier_Wallet: Submit payload + metadata
-        Supplier_Wallet ->> Supplier_Wallet: Create eInvoice Attestation
-        Supplier_Wallet ->> Supplier_Wallet: Sign eInvoice Attestation
-    end
-
-    rect rgb(220, 245, 220)
-        Note over Supplier_ERP, Evidence_Store: Direct delivery/presentation (OID4VP/DCQL profile)
-        Supplier_Wallet ->> Buyer_Wallet: Send/Present eInvoice Attestation + invoice payload + optional evidence refs
-    end
-```
-
-### 3.2 eInvoice verification by Buyer
-
-```mermaid
-sequenceDiagram
-    participant Supplier_ERP as Supplier_ERP
-    participant Supplier_Wallet as Supplier_Wallet
-    participant Buyer_Wallet as Buyer_Wallet
-    participant Trust_Registry as Trust_Registry
-    participant Status_Service as Status_Service
-    participant Evidence_Store as Evidence_Store
-
-    rect rgb(245, 235, 220)
-        Note over Supplier_ERP, Evidence_Store: Verification (Buyer)
-        Buyer_Wallet ->> Trust_Registry: Resolve Supplier issuer metadata (Trust registry)
-        Trust_Registry -->> Buyer_Wallet: Trust metadata (issuer authorization)
-        Buyer_Wallet ->> Status_Service: Check status of Supplier authorization (revocation/expiry/suspension)
-        Status_Service -->> Buyer_Wallet: Status result
-        Buyer_Wallet ->> Buyer_Wallet: Verify signature on eInvoice Attestation
-        Buyer_Wallet ->> Buyer_Wallet: Verify Supplier EUCC/LPID binding (identity valid)
-        Buyer_Wallet ->> Buyer_Wallet: Verify Buyer (invoice buyer = receiving wallet ID)
-        Buyer_Wallet ->> Buyer_Wallet: Recompute invoicePayloadHash
-
-        alt [All checks pass]
-            Buyer_Wallet ->> Buyer_Wallet: ACCEPT (store for audit)
-            Buyer_Wallet -->> Supplier_Wallet: Optional msg (accepted)
-        else [Any check fails]
-            Buyer_Wallet ->> Buyer_Wallet: REJECT or QUARANTINE (error code)
-            Buyer_Wallet -->> Supplier_Wallet: Optional msg (rejected/quarantined)
-        end
-    end
-```
-
-### 3.3 eInvoice with evidence
-
-```mermaid
-sequenceDiagram
-    participant Supplier_ERP as Supplier_ERP
-    participant Supplier_Wallet as Supplier_Wallet
-    participant Buyer_Wallet as Buyer_Wallet
-    participant Trust_Registry as Trust_Registry
-    participant Status_Service as Status_Service
-    participant Evidence_Store as Evidence_Store
-
-    alt [Evidence references present]
-        Buyer_Wallet ->> Evidence_Store: Retrieve evidence by reference(s)
-        Evidence_Store -->> Buyer_Wallet: Evidence artefacts
-        Buyer_Wallet ->> Buyer_Wallet: Verify evidence integrity (hash/signature) + validity
-    else [No evidence references]
-        Note over Buyer_Wallet: Skip evidence verification
-    end
-```
+If all checks pass, the Buyer's Wallet ckears the invoice and stores the attestation for audit purposes. If any check fails, the invoiceattestation is rejected or quarantined with an error code. In both cases, an optional status message may be returned to the Supplier's Wallet.
 
 ---
 
 ## 4. Detailed scenario flow
 
-*(To be completed during the specification phase, building on the main flows above.)*
+## Main flow: direct eInvoice exchange between Business Wallets
+
+### Invoice preparation (Supplier ERP)
+
+1. The Supplier ERP prepares the eInvoice according to the EN16931 semantic model.
+2. The ERP canonicalizes the invoice payload and computes the `invoicePayloadHash` following the agreed rulebook.
+3. The ERP submits the invoice payload and associated metadata to the Supplier's European Business Wallet (EBW).
+
+### Attestation issuance (Supplier Wallet)
+
+4. The Supplier Wallet creates the eInvoice Attestation, binding the invoice payload hash to the Supplier's legal-person identity.
+5. The Supplier Wallet cryptographically signs the eInvoice Attestation.
+
+### Discovery and delivery
+
+6. The Supplier Wallet resolves the Buyer's Wallet endpoint (URL) by consulting the List of Trusted Entities (LoTE), as specified in ETSI TS 119 602.
+7. The Supplier Wallet presents the eInvoice Attestation directly to the Buyer's Wallet endpoint using the OID4VP/DCQL profile in a machine-to-machine context.
+
+### Verification (Buyer Wallet)
+
+8. The Buyer Wallet resolves the Supplier's issuer metadata by querying the Trust Registry.
+9. The Buyer Wallet checks the Supplier's authorization status (revocation, expiry, or suspension) against the Status Service.
+10. The Buyer Wallet verifies the cryptographic signature on the eInvoice Attestation.
+11. The Buyer Wallet verifies the Supplier's EBWOID identity binding.
+12. The Buyer Wallet verifies that the buyer field in the invoice matches the receiving Wallet's own identity.
+13. The Buyer Wallet recomputes the `invoicePayloadHash` and compares it against the value in the attestation.
+
+### Evidence verification (conditional)
+
+14. If evidence references are present in the attestation: the Buyer Wallet retrieves the referenced artefacts from the Evidence Store and verifies their integrity (hash/signature) and validity.
+15. If no evidence references are present: this step is skipped.
+
+### Acceptance or rejection
+
+16. If all checks pass: the Buyer Wallet **accepts** the invoice attestation and stores it for audit purposes. An optional acceptance notification may be sent to the Supplier Wallet.
+17. If any check fails: the Buyer Wallet **rejects or quarantines** the invoice attestation and records an error code. An optional rejection or quarantine notification may be sent to the Supplier Wallet.
 
 ---
 
 ## 5. Additional flows
-
-*(To be completed during the specification phase based on partner input.)*
 
 ---
 
