@@ -5,8 +5,8 @@
 | | |
 |---|---|
 | **Date** | 2026-05-24 |
-| **Version** | 0.9 |
-| **Status** | Draft |
+| **Version** | 1.0 |
+| **Status** | Final |
 | **Author(s)** | Maarten Boender - Sphereon |
 
 > **Part of the SC5 eInvoicing specification suite.** Read [Introduction.md](Introduction.md) for common concepts, roles, attestations and abbreviations.
