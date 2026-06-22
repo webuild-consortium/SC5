@@ -67,7 +67,6 @@ The eInvoice Attestation is a verifiable representation (Reference Attestation) 
 
 - verify invoice integrity,
 - verify the authenticity and validity of referenced evidence (where applicable), and
-- optionally approve a payment request (not piloted in this scenario; part of PA4).
 
 This scenario is designated **MVP**.
 
