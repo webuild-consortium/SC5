@@ -43,7 +43,7 @@ In addition to the common pre-conditions (SC5_Introduction.md, section 2.3):
 1. C1 has an EBW capable of issuing the Authorized Service Provider attestation to C2.
 2. C4 has an EBW capable of issuing the Authorized Service Provider attestation to C3 (required if C3-side verification is piloted).
 3. C2 and C3 have EBWs (or equivalent wallet-capable infrastructure) to receive and present attestations.
-4. C3 is a Verifier capable of verifying the Authorized Service Provider attestation presented by C2.
+4. C3 is a Relying Party capable of verifying the Authorized Service Provider attestation presented by C2.
 5. The Authorized Service Provider attestation schema is available and accepted by all parties.
 
 ---
@@ -144,7 +144,7 @@ sequenceDiagram
 | | b. Must have an EBW for holding and presenting Authorized SP attestation |
 | | c. Must support OpenID4VP as Holder/Presenter |
 | 4. Buyer's AP (C3) | a. Must be a certified Peppol Access Point |
-| | b. Must support OpenID4VP as Verifier (Authorized SP attestation) |
+| | b. Must support OpenID4VP as Relying Party (Authorized SP attestation) |
 | | c. Must have an EBW for holding Authorized SP attestation (MVP+) |
 | 5. EBW provider | a. Must support OpenID4VCI issuance per WBCS cs-01 |
 | | b. Must support OpenID4VP presentation per WBCS cs-02 |

@@ -170,7 +170,7 @@ The following pre-conditions apply across all Peppol-based SC5 scenarios (1, 2, 
 4. EBWOID attestations are issued to the relevant business wallets by WP4-designated EBWOID providers.
 5. WP4 trust infrastructure is operational: the WE BUILD LoTL, WE BUILD Trusted Lists, and relying party registration are available.
 6. The Approved Supplier and Authorized Service Provider attestation schemas and rulebooks are defined (to be delivered by SC5 in coordination with the WP4 semantics group and published in the WE BUILD Attestation Rulebooks catalog).
-7. Issuers, Holders and Verifiers implement the WE BUILD Conformance Specifications cs-01 (issuance) and cs-02 (presentation) for the above attestation types.
+7. Issuers, Holders and Relying Parties implement the WE BUILD Conformance Specifications cs-01 (issuance) and cs-02 (presentation) for the above attestation types.
 8. Revocation infrastructure for SC5 attestations is operational, using the IETF Token Status List mechanism as mandated by the WE BUILD ADR on Attestation Revocation.
 
 ### 2.4 WE BUILD pilot context and qualification model
@@ -187,13 +187,13 @@ SC5 operates within the WE BUILD pilot environment, which is a large-scale test 
 
 Consequently, any reference in this document suite to "QEAA" in the pilot context means **WE BUILD QEAA**: a technically interoperable credential that follows eIDAS patterns and passes the Interoperability Testbed (ITB), but does not carry eIDAS legal qualification.
 
-All SC5 implementations — wallet providers, issuers, verifiers — must pass the ITB before participating in pilots. The WBCS (cs-01 for issuance, cs-02 for presentation) define the technical requirements that implementations must conform to.
+All SC5 implementations — wallet providers, issuers, relying parties — must pass the ITB before participating in pilots. The WBCS (cs-01 for issuance, cs-02 for presentation) define the technical requirements that implementations must conform to.
 
 ### 2.5 System-to-system wallet interactions
 
 The Peppol-based SC5 scenarios involve machine-to-machine flows between backend systems (Access Points), not direct end-user interactions. As noted in the Blueprint (section 4.5), enterprise and system-to-system wallet interactions are fully supported: credential issuance and presentation may be initiated by backend systems, while the same trust framework, credential formats and verification mechanisms apply as in user-driven flows.
 
-This is directly applicable to SC5: C2 acts as a Verifier in a fully automated pipeline when it checks attestations on incoming invoice submissions. The OpenID4VP exchange between C1's EBW and C2, or between C2 and C3, is a system-to-system interaction with no human-in-the-loop required at runtime.
+This is directly applicable to SC5: C2 acts as a Relying Party in a fully automated pipeline when it checks attestations on incoming invoice submissions. The OpenID4VP exchange between C1's EBW and C2, or between C2 and C3, is a system-to-system interaction with no human-in-the-loop required at runtime.
 
 ---
 
@@ -205,11 +205,11 @@ This is directly applicable to SC5: C2 acts as a Verifier in a fully automated p
 |---------------|----------|-----------|
 | Buyer (C4) | Issuer (Approved Supplier; Authorized SP for C3) | 1, 2, 3, 5 |
 | Supplier (C1) | Holder/Presenter (Approved Supplier); Issuer (Authorized SP for C2, eInvoice to C4) | 1, 2, 3, 4, 5 |
-| Supplier's AP (C2) | Verifier (Approved Supplier); Holder/Presenter (Authorized SP) | 1, 2, 3, 5 |
-| Buyer's AP (C3) | Verifier (Authorized SP from C1/C2); Holder/Presenter (Authorized SP from C4) | 2, 3, 5 |
-| Tax Authority (MS A / MS B) | Verifier (Authorized SP attestation for tax reporting) | 3 |
+| Supplier's AP (C2) | Relying Party (Approved Supplier); Holder/Presenter (Authorized SP) | 1, 2, 3, 5 |
+| Buyer's AP (C3) | Relying Party (Authorized SP from C1/C2); Holder/Presenter (Authorized SP from C4) | 2, 3, 5 |
+| Tax Authority (MS A / MS B) | Relying Party (Authorized SP attestation for tax reporting) | 3 |
 | Supplier (Business Wallet) | Issuer (eInvoice Attestation) | 1, 2, 3, 4, 5 |
-| Buyer (Business Wallet) | Holder/Verifier (eInvoice Attestation) | 1, 2, 3, 4, 5 |
+| Buyer (Business Wallet) | Holder/Relying Party (eInvoice Attestation) | 1, 2, 3, 4, 5 |
 | QTSP | Trust service provider (QESeal, ERDS/QERDS) | 5 |
 
 ### 3.2 Pilot compositions
@@ -311,7 +311,7 @@ SC5 reuses the EBWOID (for identifying companies) as a dependency from WP4, but 
 |-----------|-------|
 | **Issuer** | Buyer (C4) |
 | **Holder / subject** | Supplier (C1) |
-| **Verifier** | Supplier's AP (C2) |
+| **Relying Party** | Supplier's AP (C2) |
 | **ARF attestation type** | EAA (QEAA pending analysis) |
 | **Credential format** | SD-JWT-VC |
 
@@ -334,7 +334,7 @@ The parties (Buyer and Supplier) are implicitly determined by the Wallet Instanc
 |-----------|-------|
 | **Issuer** | Company (C1 or C4) |
 | **Holder / subject** | Service Provider (C2 or C3) |
-| **Verifier** | Counterpart AP (C3 or C2); Tax Authority (Scenario 3) |
+| **Relying Party** | Counterpart AP (C3 or C2); Tax Authority (Scenario 3) |
 | **ARF attestation type** | EAA (QEAA pending analysis) |
 | **Credential format** | SD-JWT-VC |
 
@@ -358,7 +358,7 @@ Legal identity of the mandating business and the service provider is NOT asserte
 |-----------|-------|
 | **Issuer** | Supplier (via Supplier Wallet) |
 | **Holder / subject** | Buyer Wallet |
-| **Verifier** | Buyer Wallet |
+| **Relying Party** | Buyer Wallet |
 | **ARF attestation type** | EAA |
 | **Credential format** | SD-JWT-VC |
 | **Applicable domain standards** | EN16931-UBL and/or Peppol BIS3 |

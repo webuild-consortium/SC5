@@ -183,13 +183,13 @@ For now the transport protocol will be OID4VP & DCQL. Depending on the upcoming 
 
 **Transfer protocol: OID4VP/DCQL (pilot choice) in a Machine 2 Machine context**
 
-OID4VP/DCQL is primarily about the semantics and security of verifiable presentations: what the verifier asks for (constraints), how the holder proves it (presentation), and how replay and audience binding are handled (nonce/audience/state). It does not require that the verifier (buyer) "starts the business process"; it requires that the verifier (buyer) controls the request object (or at least the parameters that make the response verifiable and non-replayable).
+OID4VP/DCQL is primarily about the semantics and security of verifiable presentations: what the Relying Party asks for (constraints), how the holder proves it (presentation), and how replay and audience binding are handled (nonce/audience/state). It does not require that the Relying Party (buyer) "starts the business process"; it requires that the Relying Party (buyer) controls the request object (or at least the parameters that make the response verifiable and non-replayable).
 
 In our pilot, the Supplier initiates sending because it already has the Buyer's contact data (wallet address + API endpoint). That can still fit OID4VP/DCQL if we implement a short handshake where the Supplier fetches the Buyer's request object before submitting the presentation.
 
 A workable supplier-initiated flow looks like this:
 
-- Supplier wallet already has Buyer verifier endpoint (from contact data).
+- Supplier wallet already has Buyer Relying Party endpoint (from contact data).
 - Supplier wallet calls Buyer endpoint to obtain a fresh Presentation Request (OID4VP Request Object) that contains:
   - DCQL query constraints (what Buyer will accept),
   - nonce + audience + expiry window,
@@ -203,7 +203,7 @@ A workable supplier-initiated flow looks like this:
   - the supplier's legal-person identity binding (EUCC/LPID or equivalent),
   - invoice payload hash binding and any evidence integrity/validity checks.
 
-This is "Supplier-initiated delivery" operationally, while keeping "Verifier-defined requirements" cryptographically and semantically.
+This is "Supplier-initiated delivery" operationally, while keeping "Relying Party-defined requirements" cryptographically and semantically.
 
 ### 7.2 (Q)ERDS — possible additional pilot track
 
@@ -225,7 +225,7 @@ These are not mutually exclusive with OID4VP/DCQL. Two common positions are:
 
 | Decision factor | OID4VP/DCQL | ERDS | QERDS |
 |----------------|-------------|------|-------|
-| Primary purpose | Interoperable presentation semantics and verifier constraints | Registered delivery evidence (non-qualified) | Highest-assurance registered delivery evidence (qualified) |
+| Primary purpose | Interoperable presentation semantics and Relying Party constraints | Registered delivery evidence (non-qualified) | Highest-assurance registered delivery evidence (qualified) |
 | Who initiates operationally | Buyer provides request object. Supplier initiates. | Supplier initiates; delivery service transports | Supplier initiates; qualified delivery service transports |
 | What you can prove best | The buyer received a verifiable presentation that satisfies buyer-defined constraints | Sent/received with integrity and evidence of delivery | Same as ERDS, but with qualified evidentiary strength |
 | Dispute profile | Normal (as is today) | Elevated risk of dispute | High-value / High-risk / Regulated |

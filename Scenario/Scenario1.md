@@ -40,7 +40,7 @@ In addition to the common pre-conditions (SC5_Introduction.md, section 2.3):
 
 1. C4 has an operational EBW capable of issuing the Approved Supplier attestation.
 2. C1 has an EBW capable of receiving and presenting the Approved Supplier attestation.
-3. C2 is a Verifier/Relying Party capable of verifying the Approved Supplier attestation via OpenID4VP.
+3. C2 is a Relying Party capable of verifying the Approved Supplier attestation via OpenID4VP.
 4. The Approved Supplier attestation schema is available and accepted by all parties.
 5. C4 has established a commercial relationship with C1 outside of the wallet system (e.g. via a procurement process) and is ready to attest to it.
 
@@ -91,7 +91,7 @@ sequenceDiagram
 | A.2 | EBW C4 → EBW C1 | The EBW of C4 (acting as Issuer) issues the attestation to the EBW of C1 using OpenID4VCI. The attestation is signed by C4 and bound to C1's wallet. | OpenID4VCI interoperability between wallets; Approved Supplier schema available | Batch issuance for multiple suppliers; delegation to procurement platform |
 | A.3 | EBW C1 | C1's EBW stores the attestation. C1 is notified. | — | C1 may have multiple Approved Supplier attestations from different buyers |
 | B.1 | C1 | C1 creates the invoice in Peppol BIS 3.0 format and initiates submission to C2. As part of the submission handshake, C1 presents the Approved Supplier attestation for the relevant buyer (C4) via OpenID4VP. | Approved Supplier attestation in EBW C1; C2 supports OpenID4VP verification | C1 may present the attestation out-of-band (API call separate from invoice submission); scope to be defined |
-| B.2 | C2 | C2 acts as Verifier/Relying Party. It verifies: (a) the attestation signature (issuer = C4), (b) the subject matches C1, (c) the attestation is within its validity period, (d) the attestation has not been revoked. | Trust registry accessible to C2; revocation endpoint operational | C2 may cache verification results for a configurable period to avoid repeated checks |
+| B.2 | C2 | C2 acts as Relying Party. It verifies: (a) the attestation signature (issuer = C4), (b) the subject matches C1, (c) the attestation is within its validity period, (d) the attestation has not been revoked. | Trust registry accessible to C2; revocation endpoint operational | C2 may cache verification results for a configurable period to avoid repeated checks |
 | B.3a | C2 → C3 | If verification succeeds, C2 forwards the invoice to C3 via Peppol AS4. C2 resolves the recipient by looking up C4's Peppol ID in the SML/SMP, which returns C3 as the AP authorised to receive on C4's behalf. | C4 registered in SMP with C3 as receiving AP | C2 may attach attestation metadata to the AS4 message (optional, to be specified) |
 | B.3b | C2 → C1 | If verification fails (invalid, absent, expired, revoked), C2 rejects the invoice and returns an error to C1 with a standardized reason code. | — | Reason codes: ATTESTATION_MISSING, ATTESTATION_INVALID, ATTESTATION_EXPIRED, ATTESTATION_REVOKED |
 | B.4 | C3 → C4 | C3 delivers the invoice to C4 using the agreed delivery mechanism. | — | — |
@@ -115,7 +115,7 @@ The following will **not** be piloted in Scenario 1: proximity-based presentatio
 
 - **No existing Approved Supplier attestation schema**: a new EAA schema and rulebook must be designed from scratch, in coordination with WP4 (semantics group).
 - **Wallet interoperability**: the Buyer's EBW and the Supplier's EBW may be from different providers; cross-wallet OpenID4VCI issuance must be tested.
-- **C2 integration**: Peppol Access Points must be extended to act as OpenID4VP Verifiers; this requires changes to their onboarding and operational software.
+- **C2 integration**: Peppol Access Points must be extended to act as OpenID4VP Relying Parties; this requires changes to their onboarding and operational software.
 - **Revocation infrastructure**: revocation of the Approved Supplier attestation must be implemented using the IETF Token Status List, as mandated by the WE BUILD ADR on Attestation Revocation. Attestations with a validity period ≤ 24 hours are exempt from revocation requirements; longer-lived attestations (expected for the Approved Supplier relationship) require a live Token Status List endpoint accessible to C2.
 - **EBWOID availability**: issuance of EBWOIDs in all piloting Member States is required before Scenario 1 can be piloted cross-border.
 
@@ -126,7 +126,7 @@ The following will **not** be piloted in Scenario 1: proximity-based presentatio
 | # | Assumption | Rationale |
 |---|-----------|-----------|
 | WA1.1 | The Approved Supplier attestation is implemented as a non-qualified EAA (not QEAA) for the MVP pilot. | A QEAA mandate would require QTSP involvement and may not be feasible within pilot timelines. This can be escalated for production. |
-| WA1.2 | C2 is the primary Verifier for the attestation; C3 does not verify in Scenario 1. | Placing verification at C2 prevents unauthorized invoices from entering the network at the source. Adding C3 verification is a Scenario 2 / Scenario 5 enhancement. |
+| WA1.2 | C2 is the primary Relying Party for the attestation; C3 does not verify in Scenario 1. | Placing verification at C2 prevents unauthorized invoices from entering the network at the source. Adding C3 verification is a Scenario 2 / Scenario 5 enhancement. |
 | WA1.3 | The attestation is presented via a machine-to-machine OpenID4VP flow, not a browser-based user interaction. | The invoice submission process in Peppol is automated; human-in-the-loop wallet interactions are not appropriate for production invoice flows. |
 | WA1.5 | In the WE BUILD pilot, "QEAA" means WE BUILD QEAA (technically interoperable, ITB-tested) rather than eIDAS-qualified. | The WE BUILD pilot environment does not operate within the formal eIDAS certification framework. Production escalation to eIDAS QEAA is a post-pilot decision. |
 
@@ -145,7 +145,7 @@ The following will **not** be piloted in Scenario 1: proximity-based presentatio
 | | b. EBW must support OpenID4VCI (issuance of Approved Supplier attestation) |
 | | c. Must be a registered Peppol participant |
 | 3. Supplier's AP (C2) | a. Must be a certified Peppol Access Point |
-| | b. Must support OpenID4VP as Verifier (Approved Supplier attestation) |
+| | b. Must support OpenID4VP as Relying Party (Approved Supplier attestation) |
 | 4. EBW provider | a. Must support OpenID4VCI issuance per WBCS cs-01 |
 | | b. Must support OpenID4VP presentation per WBCS cs-02 |
 | | c. Must pass ITB conformance testing before participating in pilots |

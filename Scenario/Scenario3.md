@@ -141,9 +141,9 @@ sequenceDiagram
 | | b. Must have an EBW for holding and presenting Authorized SP attestation |
 | | c. Must support OpenID4VP as Holder/Presenter to Tax Authority |
 | 4. Buyer's AP (C3) | a. Must be a certified Peppol Access Point |
-| | b. Must support OpenID4VP as Verifier and Holder/Presenter |
+| | b. Must support OpenID4VP as Relying Party and Holder/Presenter |
 | 5. Tax Authority | a. Must provide an API endpoint for TDD submission |
-| | b. Must support OpenID4VP as Verifier (Authorized SP attestation) |
+| | b. Must support OpenID4VP as Relying Party (Authorized SP attestation) |
 | | c. Must be connected to the trust registry |
 | 6. EBW provider | a. Must support OpenID4VCI issuance per WBCS cs-01 |
 | | b. Must support OpenID4VP presentation per WBCS cs-02 |

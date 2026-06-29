@@ -120,7 +120,7 @@ Optional references to supporting evidence items. Supported forms:
 - The attestation SHALL be valid only if the Supplier wallet instance is bound to a valid legal entity attestation (e.g., EUCC or equivalent), and the Buyer identity in the invoice matches the receiving wallet's legal entity identity.
 - The attestation SHALL be valid only if the Supplier's signing key is trusted and valid at verification time (not expired/revoked/suspended) and the signature verifies.
 - `invoicePayloadHash` SHALL equal the hash of the canonicalized invoice payload, using the rulebook-defined canonicalization and hash algorithm.
-- `invoiceNumber` SHALL be present and unique for the Supplier within the verifier's duplicate-detection window; duplicates SHALL trigger reject or quarantine per verifier policy.
+- `invoiceNumber` SHALL be present and unique for the Supplier within the Relying Party's duplicate-detection window; duplicates SHALL trigger reject or quarantine per Relying Party policy.
 - `issueDate` SHALL be present and not unreasonably in the future (allow clock-skew tolerance). If `dueDate` is present (if included in a future profile), it SHALL be ≥ `issueDate`.
 - `sellerLegalRegistrationIdentifier` and `buyerRegistrationIdentifier` SHALL match the identities in the invoice payload; mismatches invalidate the attestation.
 - If `taxSubtotal` is used, the `totalTaxAmount` MUST strictly equal the sum of all `taxAmount` values provided in the `taxSubtotal`.
