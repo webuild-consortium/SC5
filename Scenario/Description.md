@@ -25,7 +25,7 @@
    - 2.5 [System-to-system wallet interactions](#25-system-to-system-wallet-interactions)
 3. [Roles and participants](#3-roles-and-participants)
    - 3.1 [Actor model summary](#31-actor-model-summary)
-   - 3.2 [Pilot compositions](#32-pilot-compositions)
+   - 3.2 [Pilot participants](#32-pilot-participants)
    - 3.3 [Additional roles and partners](#33-additional-roles-and-partners)
    - 3.4 [Target country combinations](#34-target-country-combinations)
    - 3.5 [Requirements](#35-requirements)
@@ -70,20 +70,13 @@ The SC5 scenarios share a common foundation where applicable. Scenarios 1, 2, 3 
 
 Scenarios 1, 2 and 4 are part of the Minimum Viable Product (MVP). Scenarios 3 and 5 are designated MVP+.
 
-#### Common pilot flows (Peppol-based scenarios)
+#### Common pilot flows
 
-The pilot will use real data where possible — real company names and real identifiers — but in the test environment provided by WE BUILD. The aim is to be close to production, but the attestations and wallet instances used will not have any legal effect. The invoice itself can in theory be a genuine invoice, but we will start using the Peppol test environment for transport (where relevant).
+The pilot will use real data where possible — real company names and real identifiers — but in the test environment provided by WE BUILD. The attestations and wallet instances used will not have any legal effect.
 
-We aim to reuse the same actors and processes across Scenarios 1, 2, 3 and 5:
+For Scenarios 1, 2, 3 and 5, several Peppol Service Providers participate as Relying Parties, each serving end-user customers across multiple EU Member States. This makes country coverage inherently broad and flexible — the scenarios are not tied to a fixed pair of countries but reflect the multi-country reality of the participating SPs' customer bases. For Scenario 4, direct wallet-to-wallet exchange is piloted between Robert Bosch (DE) and Sphereon (NL).
 
-##### Pilot 1 (fake organisations)
-The French company "Les roses D´or" has signed a contract with the Dutch tulip provider "Green flowers" that issues an invoice for the first delivery.
-
-##### Pilot 2
-Id-union issues an invoice to one of their members cross-border from Germany to Bulgaria.
-
-##### Pilot 3
-UPRC buys product x and receives an invoice via GSIS from a B2B router SP.
+Participant details are documented per scenario.
 
 ### 1.3 Reference documents
 
@@ -212,48 +205,17 @@ This is directly applicable to SC5: C2 acts as a Relying Party in a fully automa
 | Buyer (Business Wallet) | Holder/Relying Party (eInvoice Attestation) | 1, 2, 3, 4, 5 |
 | QTSP | Trust service provider (QESeal, ERDS/QERDS) | 5 |
 
-### 3.2 Pilot compositions
+### 3.2 Pilot participants
 
-#### Pilot 1 (Scenarios 1, 2, 3, 5)
+Participant details are specified in each scenario file. The table below gives an overview per scenario.
 
-| Primary role | UC partner name | Country |
-|-------------|----------------|---------|
-| Supplier (C1) | "Green flowers" (fake) | Netherlands |
-| Buyer (C4) | "Les roses D´or" (fake) | France |
-| Supplier's AP (C2) | Banqup | |
-| Buyer's AP (C3) | Semansys | |
-| EBW provider (Supplier) | Banqup | |
-| EBW provider (Buyer) | Sphereon | |
-
-#### Pilot 2 (Scenarios 1, 2, 3, 5)
-
-| Primary role | UC partner name | Country |
-|-------------|----------------|---------|
-| Supplier (C1) | IdUnion | Germany |
-| Buyer (C4) | TBD | Bulgaria |
-| Supplier's AP (C2) | Datev | |
-| Buyer's AP (C3) | B2B Router? | |
-| EBW provider (Supplier) | TBD (from IdUnion) | |
-| EBW provider (Buyer) | TBD (from IdUnion) | |
-
-#### Pilot 3 (Scenarios 1, 2, 3, 5)
-
-| Primary role | UC partner name | Country |
-|-------------|----------------|---------|
-| Supplier (C1) | TBD (by B2B router) | Spain? |
-| Buyer (C4) | UPRC | Greece |
-| Supplier's AP (C2) | B2B router | |
-| Buyer's AP (C3) | GSIS | Greece |
-| EBW provider (Supplier) | ValidateID | |
-| EBW provider (Buyer) | GU-net | |
-
-#### Pilot 4 (Scenario 4)
-
-| Primary role | UC partner name | Country |
-|-------------|----------------|---------|
-| Supplier | Robert Bosch | DE |
-| Supplier | Sphereon | NL |
-| Buyer (Relying party) | Robert Bosch | DE |
+| Scenario | Relying Parties | Issuer countries |
+|----------|----------------|-----------------|
+| 1 | B2BRouter (ES), ILYDA (GR), Banqup (BE), Ledger Leopard (NL), Datev (DE) | FR, BE, NL, DE, GR, ES, SE |
+| 2 | B2BRouter (ES), ILYDA (GR), GSIS (GR), Banqup (BE), Ledger Leopard (NL), Datev (DE) | FR, BE, NL, DE, GR, ES, SE |
+| 3 | TBD | TBD |
+| 4 | Bosch (DE) | DE, NL |
+| 5 | TBD | TBD |
 
 ### 3.3 Additional roles and partners
 
@@ -273,14 +235,13 @@ This is directly applicable to SC5: C2 acts as a Relying Party in a fully automa
 
 #### Peppol-based scenarios (1, 2, 3, 5)
 
-| Sending MS \ Receiving MS | France | Netherlands | Germany | Bulgaria | Spain | Greece |
-|--------------------------|--------|-------------|---------|----------|-------|--------|
-| France | — | Y | | | | |
-| Netherlands | Y | — | | | | |
-| Germany | | | — | Y | | |
-| Bulgaria | | | Y | — | | |
-| Spain | | | | | — | Y |
-| Greece | | | | | Y | — |
+Coverage is determined by the customer base of the participating Service Providers and is not limited to fixed country pairs. Member States involved: **FR, BE, NL, DE, GR, ES, SE**.
+
+#### Scenario 4
+
+| Issuer (Supplier Wallet) | Relying Party (Buyer Wallet) |
+|--------------------------|------------------------------|
+| DE, NL | DE |
 
 ### 3.5 Requirements
 

@@ -32,6 +32,20 @@ Scenario 1 introduces the **Approved Supplier attestation** as a mechanism for a
 
 This scenario establishes the foundational buyer-supplier trust relationship and is the primary **MVP** scenario.
 
+### Participants
+
+The participating Relying Parties (C2) are Peppol Service Providers, each serving end-user customers (C4 — Issuers of the Approved Supplier attestation) across multiple EU Member States. Country coverage is therefore flexible and determined by the SP's customer base.
+
+| Role | Organisation | Country |
+|------|-------------|---------|
+| Relying Party (C2) | B2BRouter | ES |
+| Relying Party (C2) | ILYDA | GR |
+| Relying Party (C2) | Banqup | BE |
+| Relying Party (C2) | Ledger Leopard | NL |
+| Relying Party (C2) | Datev | DE |
+
+**Countries of Issuers (C4):** FR, BE, NL, DE, GR, ES, SE
+
 ---
 
 ## 2. Pre-conditions

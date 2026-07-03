@@ -70,6 +70,14 @@ The eInvoice Attestation is a verifiable representation (Reference Attestation) 
 
 This scenario is designated **MVP**.
 
+### Participants
+
+| Role | Organisation | Country |
+|------|-------------|---------|
+| Issuer (Supplier Wallet) | Robert Bosch | DE |
+| Issuer (Supplier Wallet) | Sphereon | NL |
+| Relying Party (Buyer Wallet) | Robert Bosch | DE |
+
 The scenario is based on the following documentation:
 
 - WE BUILD SC5 Stock Taking document (V1.0, 11/12/2025)

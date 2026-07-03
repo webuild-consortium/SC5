@@ -34,6 +34,21 @@ This adds an additional layer of trust between the APs, complementing Scenario 1
 
 This is an **MVP** scenario.
 
+### Participants
+
+The participating Relying Parties (C3) are Peppol Service Providers, each serving end-user customers (C1/C4 — Issuers of the Authorized Service Provider attestation) across multiple EU Member States. Country coverage is therefore flexible and determined by the SP's customer base.
+
+| Role | Organisation | Country |
+|------|-------------|---------|
+| Relying Party (C3) | B2BRouter | ES |
+| Relying Party (C3) | ILYDA | GR |
+| Relying Party (C3) | GSIS | GR |
+| Relying Party (C3) | Banqup | BE |
+| Relying Party (C3) | Ledger Leopard | NL |
+| Relying Party (C3) | Datev | DE |
+
+**Countries of Issuers (C1/C4):** FR, BE, NL, DE, GR, ES, SE
+
 ---
 
 ## 2. Pre-conditions
