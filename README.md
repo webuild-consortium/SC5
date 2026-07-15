@@ -28,7 +28,8 @@ The repository contains the SC5 scenario specifications, attestation definitions
 ## Repository structure
 
 * [`Scenario/`](Scenario/) — Common concepts, actors, architecture and detailed specifications for the five SC5 scenarios
-* [`Attestations/`](Attestations/) — Attestation schemas and related artefacts used by the SC5 scenarios
+* [`Attestations/`](Attestations/) — Attestation description of the attestations used by the SC5 scenarios
+* [`Rulebooks/`](Rulebooks/) - The attestation rulebooks for the SC5 related attestations
 
 ## Status
 
