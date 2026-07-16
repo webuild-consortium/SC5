@@ -2,6 +2,7 @@
 |---------|------------|------------|
 | 0.1 | 2026-06-01 | Initial draft of the Approved Supplier attestation rulebook, derived from the WE BUILD Attestation Rulebook Template v1.1 and aligned with the SC5 eInvoicing scenario specification (Scenario 1). |
 | 0.6 | 2026-07-14 | Review draft for SC5 rulebook review meeting. Aligned with the WE BUILD attestation rulebooks catalog conventions: vct pattern `eu.we-build:<slug>:1`, legal category value `EAA`, EBWOID-anchored EAA trust model per rb-base, Chapter 4 issuer/RP obligations referencing the Base Verification rulebook, and Token Status List metadata (`status_list_credential`/`status_list_index`). |
+| 0.7 | 2026-07-15 | Added issue tracker and cleaned up author list layout |
 
 # WE BUILD Attestation Rulebook for attestations of type *Approved Supplier*
 
@@ -12,16 +13,10 @@ pre-approval).*
 
 * Author(s):
     * Rune Kjørlaug, Emning AS / OpenPeppol (SC5 co-lead)
-* Previous Authors
-    * N/A (initial version)
-
-| Version | Date | Description |
-|---------|------------|------------|
-| 0.1 | 2026-06-01 | Initial draft. |
 
 **Feedback:**
 
-* WE BUILD SC5 issue tracker — [TO BE ADDED]
+* [WE BUILD SC5 issue tracker](../../issues)
 
 ## 1 Introduction
 
