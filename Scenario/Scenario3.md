@@ -16,7 +16,7 @@
 </style>
 <div class="no-print">
 
-> **Part of the SC5 eInvoicing specification suite.** Read [Description.md](Description.md) for common concepts, roles, attestations and abbreviations.
+<b>Part of the SC5 eInvoicing specification suite.</b> Read <a href="Description.html">Description</a> for common concepts, roles, attestations and abbreviations.
 
 </div>
 
