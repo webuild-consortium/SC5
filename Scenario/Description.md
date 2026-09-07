@@ -11,6 +11,13 @@
 
 ---
 
+<style>
+@media print {
+  .no-print { display: none; }
+}
+</style>
+<div class="no-print">
+
 ## Index
 
 1. [Introduction](#1-introduction)
@@ -36,6 +43,7 @@
 - [Annex A — Abbreviations](#annex-a--abbreviations)
 
 ---
+</div>
 
 ## 1. Introduction
 

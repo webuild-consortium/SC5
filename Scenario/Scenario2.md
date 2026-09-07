@@ -9,7 +9,14 @@
 | **Status** | Final |
 | **Author(s)** | Rune Kjørlaug - OpenPeppol |
 
-> **Part of the SC5 eInvoicing specification suite.** Read [Introduction.md](Introduction.md) for common concepts, roles, attestations and abbreviations.
+<style>
+@media print {
+  .no-print { display: none; }
+}
+</style>
+<div class="no-print">
+
+> **Part of the SC5 eInvoicing specification suite.** Read [Description.md](Description.md) for common concepts, roles, attestations and abbreviations.
 
 ---
 
@@ -25,6 +32,8 @@
 - [Annex 1 — Requirements for scenario roles](#annex-1--requirements-for-scenario-roles)
 
 ---
+
+</div>
 
 ## 1. Introduction
 
