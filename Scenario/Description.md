@@ -1,6 +1,6 @@
 # SC5 — eInvoicing: Scenario Specifications
 
-**WE BUILD consortium | WP2 — UC SC5**
+**WE BUILD consortium** | **WP2 — UC SC5**
 
 | | |
 |---|---|
