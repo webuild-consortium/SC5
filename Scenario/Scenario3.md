@@ -1,6 +1,6 @@
 # SC5 — Scenario 3: Service Provider Authorization Verifiable by Tax Administration
 
-**WE BUILD consortium | WP2 — UC SC5**
+**WE BUILD consortium** | **WP2 — UC SC5**
 
 | | |
 |---|---|

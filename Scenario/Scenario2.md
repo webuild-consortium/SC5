@@ -1,6 +1,6 @@
 # SC5 — Scenario 2: Service Provider Authorization
 
-**WE BUILD consortium | WP2 — UC SC5**
+**WE BUILD consortium** | **WP2 — UC SC5**
 
 | | |
 |---|---|

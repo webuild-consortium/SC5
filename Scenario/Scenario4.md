@@ -1,6 +1,6 @@
 # SC5 — Scenario 4: Direct eInvoicing between Business Wallets
 
-**WE BUILD consortium | WP2 — UC SC5**
+**WE BUILD consortium** | **WP2 — UC SC5**
 
 | | |
 |---|---|
