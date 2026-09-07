@@ -18,6 +18,7 @@
 
 > **Part of the SC5 eInvoicing specification suite.** Read [Description.md](Description.md) for common concepts, roles, attestations and abbreviations.
 
+</div>
 ---
 
 ## Index
@@ -32,8 +33,6 @@
 - [Annex 1 — Requirements for scenario roles](#annex-1--requirements-for-scenario-roles)
 
 ---
-
-</div>
 
 ## 1. Introduction
 

@@ -18,6 +18,7 @@
 
 > **Part of the SC5 eInvoicing specification suite.** Read [Description.md](Description.md) for common concepts, roles, attestations and abbreviations.
 
+</div>
 ---
 
 ## Index
@@ -38,8 +39,6 @@
 - [Annex 2 — Open issues and decisions log](#annex-2--open-issues-and-decisions-log)
 
 ---
-
-</div>
 
 ## 1. Introduction
 
