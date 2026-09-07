@@ -8,7 +8,8 @@
       const container = document.createElement('div');
       container.className = 'mermaid';
       container.textContent = el.textContent;
-      el.closest('pre')?.replaceWith(container) || el.replaceWith(container);
+      const target = el.closest('pre') || el;
+      target.replaceWith(container);
     });
     mermaid.run();
   });
